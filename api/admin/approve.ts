@@ -1,8 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { requireAdmin } from '../../lib/requireAdmin'
 import { ensureSchema, sql } from '../../lib/db'
+import { withErrorHandling } from '../../lib/apiErrors'
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default withErrorHandling(async (req: VercelRequest, res: VercelResponse) => {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'POST required' })
     return
@@ -19,4 +20,4 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   await ensureSchema()
   await sql`UPDATE users SET status = 'approved', approved_at = now(), approved_by = ${session.email} WHERE email = ${email}`
   res.status(200).json({ ok: true })
-}
+})
