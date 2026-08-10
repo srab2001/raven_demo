@@ -55,6 +55,38 @@ those.
 4. **Revoke** flips a user's status to `revoked`, blocking future logins.
    Existing sessions remain valid until they expire (see limitation below).
 
+## Troubleshooting
+
+**"This Serverless Function has crashed" / `FUNCTION_INVOCATION_FAILED` / a
+request that shows `Status: 0` in the Vercel function logs.** This almost
+always means a required environment variable is missing on *that specific*
+deployment. Every `/api/*` handler in this repo now catches its own errors
+(see the two fixes below), so a missing env var should show up as a clean
+redirect to `/login?error=server` or a JSON `500` — not a crash. If you see
+a crash, it's a regression; check the function's logs (Vercel gives you a
+direct link in the error page) for the actual "X is not set" message, and
+compare against the environment variable table above.
+
+Two real crashes were found and fixed this way after the initial rollout:
+`lib/db.ts` threw at module import time when `DATABASE_URL` was missing
+(crashed anything touching `/api/admin/*` or `/api/auth/google/callback`),
+and `/api/auth/google/start` had no `try/catch` around `buildGoogleAuthUrl()`,
+which throws if `GOOGLE_CLIENT_ID` is missing.
+
+**Multiple Vercel projects tracking one repo.** If more than one Vercel
+project is connected to this GitHub repo (check the PR checks — Vercel
+comments once per connected project), each one has its own, separate set of
+environment variables. Setting `GOOGLE_CLIENT_ID` on one project does
+nothing for the other. Confirm which project's domain you're actually
+testing against before assuming an env var is "already set."
+
+**A project's "production" tracking a branch, not `main`.** Some Vercel
+projects (e.g. ones created via v0.app) can have their production
+environment bound to whatever branch was last connected rather than `main`.
+Check the deployment's "Branch" field in its function logs / deployment
+details if production behavior seems to lag or lead what you'd expect from
+`main`.
+
 ## Known limitations
 
 - **Session TTL vs. revoke:** session cookies are valid for 7 days and
