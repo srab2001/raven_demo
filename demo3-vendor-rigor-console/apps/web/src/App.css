@@ -1,12 +1,16 @@
 .app-shell { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem 3rem; display: grid; gap: 1rem; }
 .hero-card, .panel, .tile { background: white; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08); }
-.eyebrow { text-transform: uppercase; font-weight: 700; letter-spacing: 0.2em; color: #6d28d9; font-size: 0.75rem; }
+.origin-note { background: #f0f7ff; border: 1px solid #bfdbfe; border-radius: 1rem; padding: 1.1rem 1.25rem; }
+.origin-note h2 { font-size: 0.95rem; margin: 0 0 0.5rem; color: #0071bc; }
+.origin-note p { margin: 0 0 0.6rem; color: #1e3a5f; }
+.origin-note ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 0.35rem; font-size: 0.9rem; color: #1e3a5f; }
+.eyebrow { text-transform: uppercase; font-weight: 700; letter-spacing: 0.2em; color: #0071bc; font-size: 0.75rem; }
 .subtext { color: #64748b; }
 .tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .tabs button { background: #e2e8f0; color: #0f172a; }
-.tabs button.active { background: #6d28d9; color: white; }
+.tabs button.active { background: #0071bc; color: white; }
 .panel-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
-button { border: none; border-radius: 999px; padding: 0.6rem 1rem; background: #2563eb; color: white; cursor: pointer; font: inherit; }
+button { border: none; border-radius: 999px; padding: 0.6rem 1rem; background: #0071bc; color: white; cursor: pointer; font: inherit; }
 button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
 button:disabled { background: #cbd5e1; color: #64748b; cursor: not-allowed; }
 
@@ -23,7 +27,7 @@ td { padding: 0.6rem 0.75rem; border-bottom: 1px solid #e2e8f0; vertical-align: 
 .state-merged { background: #16a34a; }
 .state-in_review { background: #f59e0b; }
 .state-blocked { background: #dc2626; }
-.state-tertiary { background: #2563eb; }
+.state-tertiary { background: #0071bc; }
 .bot-log { list-style: none; padding: 0; margin: 0.75rem 0; font-size: 0.85rem; color: #166534; }
 .footnote { color: #94a3b8; font-size: 0.8rem; margin-top: 1rem; }
 button.danger { background: #b91c1c; }
@@ -37,7 +41,7 @@ button.danger { background: #b91c1c; }
 
 .rotation-grid { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-top: 0.75rem; }
 .rotation-card { border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 0.75rem; }
-.rotation-tertiary { border: 2px solid #6d28d9; }
+.rotation-tertiary { border: 2px solid #0071bc; }
 .rotation-count { font-weight: 700; color: #15803d; }
 
 .tile { border-left: 0.5rem solid #94a3b8; }

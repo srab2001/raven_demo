@@ -1,17 +1,17 @@
 .app-shell { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem 3rem; display: grid; gap: 1rem; }
 .hero-card, .panel { background: white; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08); }
-.eyebrow { text-transform: uppercase; font-weight: 700; letter-spacing: 0.2em; color: #2563eb; font-size: 0.75rem; }
+.eyebrow { text-transform: uppercase; font-weight: 700; letter-spacing: 0.2em; color: #0071bc; font-size: 0.75rem; }
 .panel-grid { display: grid; gap: 1rem; grid-template-columns: 2fr 1fr; align-items: start; }
 .panel-stack { display: grid; gap: 1rem; }
 form { display: grid; gap: 0.75rem; }
 input, button { font: inherit; }
 input { padding: 0.7rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; }
-button { border: none; border-radius: 999px; padding: 0.75rem 1rem; background: #2563eb; color: white; cursor: pointer; }
+button { border: none; border-radius: 999px; padding: 0.75rem 1rem; background: #0071bc; color: white; cursor: pointer; }
 button.active { background: #0f172a; }
 button:disabled { cursor: wait; opacity: 0.7; }
 button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
 .hint { color: #64748b; font-size: 0.85rem; margin: 0; }
-.lookup-status { color: #1d4ed8; font-weight: 700; margin: 0.5rem 0 0; }
+.lookup-status { color: #0071bc; font-weight: 700; margin: 0.5rem 0 0; }
 .field-error { color: #b91c1c; font-size: 0.85rem; margin: 0; font-weight: 600; }
 input[aria-invalid="true"] { border-color: #b91c1c; }
 .controls { display: flex; flex-wrap: wrap; gap: 0.5rem; }
@@ -30,7 +30,7 @@ input[aria-invalid="true"] { border-color: #b91c1c; }
 .bars { display: grid; gap: 0.6rem; }
 .bar-row { display: grid; grid-template-columns: 100px 1fr 60px; align-items: center; gap: 0.75rem; }
 .bar-track { height: 0.7rem; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
-.bar-fill { height: 100%; background: linear-gradient(90deg, #22c55e, #2563eb); }
+.bar-fill { height: 100%; background: linear-gradient(90deg, #22c55e, #0071bc); }
 
 .endpoint-health { display: grid; gap: 0.6rem; }
 .health-tiles { display: grid; gap: 0.6rem; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }

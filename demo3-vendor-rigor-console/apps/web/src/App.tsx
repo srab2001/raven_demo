@@ -29,6 +29,20 @@ function App() {
         <p>Operational controls for PR rigor, daily attestation, release gates, and email policy enforcement.</p>
       </header>
 
+      <section className="origin-note" aria-label="Why this console exists">
+        <h2>Why this console exists</h2>
+        <p>
+          Reduced government-side staffing during the Aug–Sep Oracle cutover opened rigor gaps on the Patient Portal.
+          The government contact issued four requirements — this console enforces each one with tooling, not memory:
+        </p>
+        <ol>
+          <li><strong>Cross-check PRs</strong> across teams before merge → <em>PR Board</em></li>
+          <li><strong>Daily product dashboard attestations</strong> → <em>Dashboard Attestation</em></li>
+          <li><strong>A ship checklist</strong> covering staging, a product-guide update with a screen-reader call-out, OCC notification, and post-release validation → <em>Ship Checklist</em></li>
+          <li><strong>Mandatory PDS Health inclusion</strong> on any government email outside PDS Health: Patient &amp; Clinical Experience → <em>Email Guardrail</em></li>
+        </ol>
+      </section>
+
       <nav className="tabs" aria-label="Console panels">
         {PANELS.map((panel) => (
           <button key={panel.key} type="button" className={activePanel === panel.key ? 'active' : ''} aria-pressed={activePanel === panel.key} onClick={() => setActivePanel(panel.key)}>

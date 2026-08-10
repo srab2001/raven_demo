@@ -1,4 +1,5 @@
 import type { FhirViolation } from '../lib/fhirValidator'
+import Tooltip from './Tooltip'
 
 export type ResultView =
   | { kind: 'ok'; name: string; dob: string; priorityGroup: string; coverage: string[] }
@@ -59,8 +60,12 @@ export default function ResultPanel({ view }: { view: ResultView | null }) {
           <h3>We didn't get a coverage record back</h3>
           <p>This does not mean the Veteran is ineligible — Coverage/v0 returned an empty result set. Try one of these other sources:</p>
           <div className="actions">
-            <button type="button" onClick={() => view.onFallback('verification')}>Query Verification API</button>
-            <button type="button" onClick={() => view.onFallback('vadir')}>Query VADIR</button>
+            <Tooltip id="demo1.tooltip.verificationapi" label="VA's Verification API — confirms identity and service history independently of the Coverage/v0 FHIR endpoint.">
+              <button type="button" onClick={() => view.onFallback('verification')}>Query Verification API</button>
+            </Tooltip>
+            <Tooltip id="demo1.tooltip.vadir" label="VADIR (Veterans Data Integration and Reuse) — VA's cross-system identity and eligibility source of record, used here as a fallback when Coverage/v0 has no data.">
+              <button type="button" onClick={() => view.onFallback('vadir')}>Query VADIR</button>
+            </Tooltip>
           </div>
         </article>
       </>
