@@ -2,6 +2,7 @@
   "name": "raven-squares-demos",
   "private": true,
   "version": "1.0.0",
+  "type": "module",
   "workspaces": [
     "demo1-lighthouse-under-load/apps/web",
     "demo2-508-eligibility-wizard",
