@@ -21,8 +21,13 @@ workflow, and known limitations.
   below for why.
 - `/api/admin/*` (users/approve/invite/revoke, content) requires an admin
   session and operates on the `users` / `content_overrides` tables.
-- `/login`, `/pending`, and `/admin` are plain static HTML pages (no build
-  step) so they don't need their own Vite app.
+- `/api/status` requires any valid session (not admin-only) and reports
+  boolean presence of required env vars, live database reachability, a
+  content-system summary, and the current deployment's commit/branch/env
+  (from Vercel's auto-injected `VERCEL_GIT_COMMIT_SHA` /
+  `VERCEL_GIT_COMMIT_REF` / `VERCEL_ENV`) — never actual secret values.
+- `/login`, `/pending`, `/admin`, and `/how-its-built` are plain static
+  HTML pages (no build step) so they don't need their own Vite app.
 
 ## Required environment variables (set in Vercel, not in the repo)
 
@@ -158,6 +163,35 @@ all three demos are editable from `/admin` without a code deploy:
   fetches `/api/content` once on load; `Callout` and `Tooltip` components
   look up their `id` in the returned overrides and fall back to their
   hardcoded default text if no override exists.
+
+## Under the hood (`/how-its-built`)
+
+An evaluator-facing walkthrough of the platform's own engineering, gated
+the same way as the three demos (any approved session, not admin-only). It
+exists because the whole build brief's philosophy — "expose inner workings
+visually so evaluators can verify claims live" — applies just as well to
+the platform running the demos as to the demos themselves. It reuses
+existing endpoints rather than adding new privileged surface area:
+
+- A live environment/database check via `GET /api/status`.
+- A live content editor (the exact same `POST`/`DELETE /api/admin/content`
+  used by `/admin`) next to an embedded iframe of a real demo page, so a
+  save is visibly propagating, not simulated.
+- Two buttons that call the real admin API — once with no session cookie,
+  once with an unknown content key — to show the actual rejection response
+  (401/403/400) instead of describing what "should" happen. Which error
+  code appears depends on whether the current viewer is actually an admin;
+  that's intentional, it demonstrates authorization being checked before
+  input validation, not a scripted failure.
+- A case study of the ESM/CommonJS crash incident (see
+  [LESSONS-LEARNED.md](LESSONS-LEARNED.md)), narrated rather than
+  re-triggered against production.
+
+`GET /api/content?manifest=1` extends the existing public content endpoint
+to also return the manifest's non-sensitive metadata (key/demo/label/
+default), so this page's live editor works for any approved viewer, not
+just admins — only the write path (`/api/admin/content`) stays
+admin-gated.
 
 ## Known limitations
 

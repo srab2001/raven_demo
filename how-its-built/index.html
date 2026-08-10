@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Under the Hood — how the RAVEN/SQUARES demo platform itself is built" />
+    <link rel="icon" href="data:," />
+    <title>Under the Hood — RAVEN/SQUARES Demos</title>
+    <style>
+      :root { color: #13233f; background: #eef3f8; font-family: Arial, sans-serif; }
+      * { box-sizing: border-box; }
+      body { margin: 0; }
+      header { background: #13233f; color: white; padding: 1.25rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+      header a { color: #cbe8ff; text-decoration: none; }
+      main { max-width: 1000px; margin: 2rem auto; padding: 0 1rem 3rem; }
+      .card { background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08); margin-bottom: 1.5rem; }
+      h1 { font-size: 1.4rem; margin: 0; }
+      h2 { font-size: 1.15rem; margin-top: 0; }
+      h2 .step-num { display: inline-flex; align-items: center; justify-content: center; width: 1.6rem; height: 1.6rem; border-radius: 999px; background: #0071bc; color: white; font-size: 0.85rem; margin-right: 0.5rem; }
+      h3 { font-size: 0.95rem; margin: 1rem 0 0.4rem; }
+      p { line-height: 1.5; }
+      .why { background: #f0f7ff; border-left: 3px solid #0071bc; padding: 0.5rem 0.75rem; font-size: 0.85rem; color: #1e3a5f; margin: 0.5rem 0 1rem; }
+      button { border: none; border-radius: 999px; padding: 0.6rem 1.1rem; background: #0071bc; color: white; cursor: pointer; font: inherit; font-weight: 700; }
+      button.ghost { background: #e2e8f0; color: #13233f; }
+      button:focus-visible, a:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+      textarea, select { width: 100%; padding: 0.6rem; border-radius: 0.5rem; border: 1px solid #94a3b8; font: inherit; }
+      textarea { min-height: 4.5rem; margin-top: 0.5rem; resize: vertical; }
+
+      /* Architecture diagram */
+      .arch-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+      .arch-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 0.6rem; padding: 0.75rem 1rem; font-size: 0.85rem; text-align: center; flex: 1; min-width: 140px; }
+      .arch-box strong { display: block; font-size: 0.9rem; margin-bottom: 0.2rem; }
+      .arch-arrow { font-size: 1.3rem; color: #64748b; padding: 0 0.25rem; }
+
+      /* Status tiles */
+      .tile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; margin-top: 0.75rem; }
+      .tile { border-radius: 0.6rem; padding: 0.75rem; font-size: 0.85rem; border: 1px solid; }
+      .tile-ok { background: #dcfce7; border-color: #86efac; color: #166534; }
+      .tile-bad { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
+      .tile-neutral { background: #f1f5f9; border-color: #cbd5e1; color: #334155; }
+      .tile strong { display: block; font-size: 0.95rem; margin-bottom: 0.25rem; }
+      .tile .tile-detail { font-size: 0.78rem; opacity: 0.85; }
+
+      /* Flow steps */
+      ol.flow { padding-left: 1.4rem; }
+      ol.flow li { margin-bottom: 0.5rem; font-size: 0.9rem; }
+      ol.flow code { background: #f1f5f9; padding: 0.1rem 0.35rem; border-radius: 0.3rem; font-size: 0.82rem; }
+
+      /* Live editor split */
+      .live-editor { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+      @media (max-width: 720px) { .live-editor { grid-template-columns: 1fr; } }
+      .editor-pane { border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 0.9rem; }
+      .editor-pane iframe { width: 100%; height: 420px; border: 1px solid #cbd5e1; border-radius: 0.5rem; margin-top: 0.5rem; }
+      #editor-result { font-size: 0.85rem; margin-top: 0.5rem; min-height: 1.2em; white-space: pre-wrap; }
+
+      /* Error demo */
+      .error-buttons { display: flex; gap: 0.6rem; flex-wrap: wrap; margin: 0.75rem 0; }
+      pre.response { background: #0f172a; color: #e2e8f0; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.8rem; overflow-x: auto; margin-top: 0.5rem; }
+      .diff { background: #0f172a; color: #e2e8f0; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.8rem; overflow-x: auto; }
+      .diff .del { color: #fca5a5; }
+      .diff .add { color: #86efac; }
+      .status-ok { color: #166534; }
+      .status-error { color: #b91c1c; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Under the hood</h1>
+      <div><span id="whoami"></span> · <a href="/admin">Admin panel</a> · <a href="/">Back to demos</a></div>
+    </header>
+    <main>
+      <p>This page walks through how the RAVEN/SQUARES demo platform itself is built and operated — the same "show it live, don't just claim it" philosophy the three product demos use, pointed at the platform instead.</p>
+
+      <section class="card">
+        <h2><span class="step-num">1</span>Setting up the instance</h2>
+        <p>Five pieces have to be wired together before anything works. This diagram is static, but the tiles below it are live — they call <code>/api/status</code> right now.</p>
+        <div class="arch-row">
+          <div class="arch-box"><strong>Browser</strong>evaluator or admin</div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box"><strong>Edge Middleware</strong><code>middleware.ts</code></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box"><strong>API routes</strong>Vercel Node functions</div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box"><strong>Neon Postgres</strong>users + content</div>
+        </div>
+        <div class="arch-row">
+          <div class="arch-box" style="max-width: 220px; margin-left: 200px;"><strong>Google OAuth</strong>identity provider, called from the API routes above</div>
+        </div>
+        <h3>Live check</h3>
+        <div id="env-tiles" class="tile-grid"></div>
+      </section>
+
+      <section class="card">
+        <h2><span class="step-num">2</span>How the elements connect</h2>
+        <h3>Signing in with Google</h3>
+        <ol class="flow">
+          <li>Middleware (<code>middleware.ts</code>) checks a signed session cookie on every request to a gated page. No cookie → redirect to <code>/login</code>.</li>
+          <li><code>/api/auth/google/start</code> redirects to Google's consent screen.</li>
+          <li><code>/api/auth/google/callback</code> exchanges the code, then verifies the ID token against Google's JWKS using <code>lib/jwt.ts</code>'s <code>verifyGoogleIdToken</code>.</li>
+          <li>The account is upserted into the <code>users</code> table. If approved, a session JWT is signed (also via <code>lib/jwt.ts</code>, Web Crypto only) into an httpOnly cookie.</li>
+          <li>The browser is redirected back to the page it originally asked for.</li>
+        </ol>
+        <p class="why"><strong>Why it's built this way:</strong> approval-gated access means nobody sees a demo — let alone the admin panel — before a human explicitly approves them, and the session-signing code has zero third-party or Node-only dependencies so it runs identically in Vercel's serverless functions and its Edge Middleware.</p>
+
+        <h3>Editing demo copy</h3>
+        <ol class="flow">
+          <li>An admin edits a textarea on <code>/admin</code> and clicks Save.</li>
+          <li>The browser sends <code>POST /api/admin/content</code> with <code>{ key, text }</code>.</li>
+          <li><code>requireAdmin()</code> checks the session; <code>api/admin/content.ts</code> checks the key exists in <code>lib/contentManifest.ts</code>.</li>
+          <li>The row is upserted into <code>content_overrides</code>.</li>
+          <li>Every demo's <code>ContentProvider</code> fetches <code>/api/content</code> on load and re-renders any callout or tooltip whose <code>id</code> matches an override.</li>
+        </ol>
+        <p class="why"><strong>Why it's built this way:</strong> copy changes ship without a code deploy, but only an approved admin can make them, and the read side (<code>/api/content</code>) stays public because it's non-sensitive UI text for pages already gated by middleware.</p>
+      </section>
+
+      <section class="card">
+        <h2><span class="step-num">3</span>How the UI is constructed, and what it calls</h2>
+        <p>Try it live: pick an item, change its text, and watch it change on the actual demo page on the right — no redeploy.</p>
+        <div class="live-editor">
+          <div class="editor-pane">
+            <label for="editor-key">Content item</label>
+            <select id="editor-key"></select>
+            <textarea id="editor-text"></textarea>
+            <div class="error-buttons">
+              <button type="button" id="editor-save">Save</button>
+              <button type="button" class="ghost" id="editor-reset">Reset to default</button>
+            </div>
+            <p id="editor-result"></p>
+          </div>
+          <div class="editor-pane">
+            <strong>Live: Demo 3, Dashboard Attestation tab</strong>
+            <iframe id="demo-frame" src="/demo3/" title="Demo 3 preview"></iframe>
+          </div>
+        </div>
+        <h3>The exact path a save takes</h3>
+        <ol class="flow">
+          <li><code>fetch('/api/admin/content', { method: 'POST', body: JSON.stringify({ key, text }) })</code></li>
+          <li>Server validates: is there a session? is it an admin? does <code>key</code> exist in the manifest? is <code>text</code> non-empty?</li>
+          <li><code>INSERT ... ON CONFLICT (key) DO UPDATE</code> into <code>content_overrides</code>.</li>
+          <li>The iframe's demo re-fetches <code>/api/content</code> next time its <code>ContentProvider</code> mounts (reload the iframe after saving to see it immediately).</li>
+        </ol>
+      </section>
+
+      <section class="card">
+        <h2><span class="step-num">4</span>Errors, live — and how they get fixed</h2>
+        <p>These call the real API. What you see depends on who you're signed in as right now — that's the point, it's demonstrating defense in depth, not a staged failure.</p>
+        <div class="error-buttons">
+          <button type="button" id="err-unauth">Call the admin API with no session</button>
+          <button type="button" id="err-invalid">Save an edit with an unknown key</button>
+        </div>
+        <pre class="response" id="err-response">Click a button to see the real response.</pre>
+        <p class="why" id="err-explain"></p>
+
+        <h3>The bigger one: a production crash, and the actual fix</h3>
+        <p>Shortly after Google sign-in first shipped, production started returning <code>FUNCTION_INVOCATION_FAILED</code> on auth routes — even though the Vercel build itself said "Ready." The full incident is written up in
+          <a href="https://github.com/srab2001/raven_demo/blob/main/docs/LESSONS-LEARNED.md" target="_blank" rel="noopener">docs/LESSONS-LEARNED.md</a>. Short version:</p>
+        <div class="diff"><span class="del">- import { SignJWT } from 'jose'  // ESM-only; broke under Vercel's monorepo Node bundling</span><br /><span class="add">+ // lib/jwt.ts rewritten to use only Web Crypto (crypto.subtle) —</span><br /><span class="add">+ // works identically under CommonJS or ESM, and also runs in Edge Middleware,</span><br /><span class="add">+ // which has no node:crypto.</span></div>
+        <p class="why"><strong>How it was actually fixed:</strong> not by tuning <code>package.json</code>'s <code>"type"</code> field further (that looked like it worked, then the same crash came back on the next fresh deploy) — by removing the ESM-only dependency entirely and verifying the fix by compiling and inspecting the emitted JS, plus unit-testing the new sign/verify code directly.</p>
+      </section>
+
+      <section class="card">
+        <h2><span class="step-num">5</span>Live status — real signals, not decoration</h2>
+        <div class="error-buttons">
+          <button type="button" id="status-refresh">Re-check now</button>
+        </div>
+        <div id="status-tiles" class="tile-grid"></div>
+      </section>
+    </main>
+
+    <script>
+      var CONTENT_ITEMS = []
+      var latestStatus = null
+
+      function tile(cls, title, detail) {
+        return '<div class="tile tile-' + cls + '"><strong>' + title + '</strong><div class="tile-detail">' + detail + '</div></div>'
+      }
+
+      function escapeHtml(value) {
+        var div = document.createElement('div')
+        div.textContent = value
+        return div.innerHTML
+      }
+
+      async function loadWhoAmI() {
+        var response = await fetch('/api/session')
+        if (!response.ok) {
+          document.getElementById('whoami').textContent = 'Not signed in'
+          return
+        }
+        var data = await response.json()
+        document.getElementById('whoami').textContent = data.email + ' (' + data.role + ')'
+      }
+
+      function renderStatus(data) {
+        latestStatus = data
+        var envTiles = document.getElementById('env-tiles')
+        var statusTiles = document.getElementById('status-tiles')
+        envTiles.innerHTML = ''
+        statusTiles.innerHTML = ''
+
+        Object.keys(data.env).forEach(function (name) {
+          envTiles.innerHTML += tile(data.env[name] ? 'ok' : 'bad', name, data.env[name] ? 'set' : 'not set')
+        })
+
+        statusTiles.innerHTML += tile(data.db.ok ? 'ok' : 'bad', 'Database', data.db.ok ? 'Reachable (SELECT 1 succeeded)' : escapeHtml(data.db.error || 'Unreachable'))
+        statusTiles.innerHTML += tile('neutral', 'Your session', escapeHtml(data.session.email) + ' — ' + escapeHtml(data.session.role))
+        var contentDetail = data.content.overrideCount + ' active override(s)'
+        if (data.content.lastEdit) contentDetail += ' • last: ' + escapeHtml(data.content.lastEdit.key) + ' by ' + escapeHtml(data.content.lastEdit.updatedBy || 'unknown')
+        statusTiles.innerHTML += tile(data.content.staleOverrides.length ? 'bad' : 'ok', 'Content system', contentDetail + (data.content.staleOverrides.length ? ' • stale keys: ' + data.content.staleOverrides.map(escapeHtml).join(', ') : ''))
+        var deploy = data.deployment
+        statusTiles.innerHTML += tile('neutral', 'Deployment', (deploy.env || 'unknown') + ' • ' + (deploy.branch || 'unknown branch') + (deploy.commit ? ' • ' + deploy.commit.slice(0, 7) : ''))
+      }
+
+      async function loadStatus() {
+        var response = await fetch('/api/status')
+        if (!response.ok) {
+          document.getElementById('env-tiles').innerHTML = tile('bad', 'Status unavailable', 'GET /api/status returned ' + response.status)
+          document.getElementById('status-tiles').innerHTML = ''
+          return
+        }
+        renderStatus(await response.json())
+      }
+
+      async function loadContentItems() {
+        var response = await fetch('/api/content?manifest=1')
+        if (!response.ok) return
+        var data = await response.json()
+        CONTENT_ITEMS = data.items || []
+        var select = document.getElementById('editor-key')
+        select.innerHTML = CONTENT_ITEMS.map(function (item) {
+          return '<option value="' + item.key + '">' + item.demo + ' — ' + escapeHtml(item.label) + '</option>'
+        }).join('')
+        if (CONTENT_ITEMS.length) selectContentItem(CONTENT_ITEMS[0].key)
+      }
+
+      function selectContentItem(key) {
+        var item = CONTENT_ITEMS.find(function (candidate) { return candidate.key === key })
+        if (!item) return
+        document.getElementById('editor-text').value = item.currentText
+      }
+
+      document.getElementById('editor-key').addEventListener('change', function (event) {
+        document.getElementById('editor-result').textContent = ''
+        selectContentItem(event.target.value)
+      })
+
+      document.getElementById('editor-save').addEventListener('click', async function () {
+        var key = document.getElementById('editor-key').value
+        var text = document.getElementById('editor-text').value
+        var resultEl = document.getElementById('editor-result')
+        var response = await fetch('/api/admin/content', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: key, text: text }),
+        })
+        var data = await response.json()
+        if (!response.ok) {
+          resultEl.textContent = 'Save failed (' + response.status + '): ' + (data.error || 'unknown error')
+          resultEl.className = 'status-error'
+          return
+        }
+        resultEl.textContent = 'Saved. Reload the preview on the right (or switch its tab) to see it.'
+        resultEl.className = 'status-ok'
+        loadContentItems()
+      })
+
+      document.getElementById('editor-reset').addEventListener('click', async function () {
+        var key = document.getElementById('editor-key').value
+        var resultEl = document.getElementById('editor-result')
+        var response = await fetch('/api/admin/content', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: key }),
+        })
+        var data = await response.json()
+        if (!response.ok) {
+          resultEl.textContent = 'Reset failed (' + response.status + '): ' + (data.error || 'unknown error')
+          resultEl.className = 'status-error'
+          return
+        }
+        resultEl.textContent = 'Reset to default. Reload the preview to see it.'
+        resultEl.className = 'status-ok'
+        loadContentItems()
+      })
+
+      document.getElementById('err-unauth').addEventListener('click', async function () {
+        var response = await fetch('/api/admin/content', { credentials: 'omit' })
+        var data = await response.json().catch(function () { return {} })
+        document.getElementById('err-response').textContent = 'HTTP ' + response.status + '\n' + JSON.stringify(data, null, 2)
+        document.getElementById('err-explain').innerHTML = '<strong>What happened:</strong> the request was sent with no session cookie on purpose. <code>requireAdmin()</code> in <code>lib/requireAdmin.ts</code> rejects it before touching the database. If this were a real unapproved reviewer, the fix isn’t a code change — it’s an admin clicking Approve on <a href="/admin">/admin</a>.'
+      })
+
+      document.getElementById('err-invalid').addEventListener('click', async function () {
+        var response = await fetch('/api/admin/content', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: 'demo0.does-not-exist', text: 'test' }),
+        })
+        var data = await response.json().catch(function () { return {} })
+        document.getElementById('err-response').textContent = 'HTTP ' + response.status + '\n' + JSON.stringify(data, null, 2)
+        var explainEl = document.getElementById('err-explain')
+        if (response.status === 403) {
+          explainEl.innerHTML = '<strong>What happened:</strong> your current session isn’t an admin, so <code>requireAdmin()</code> rejected the request before the (also real) unknown-key validation in <code>api/admin/content.ts</code> ever ran. That’s the point — authorization is checked before input validation.'
+        } else {
+          explainEl.innerHTML = '<strong>What happened:</strong> you are an admin, so this reached <code>api/admin/content.ts</code>’s validation, which checks the key against <code>lib/contentManifest.ts</code> and rejects unknown keys with a clean 400 instead of a database error.'
+        }
+      })
+
+      document.getElementById('status-refresh').addEventListener('click', loadStatus)
+
+      loadWhoAmI()
+      loadStatus()
+      loadContentItems()
+    </script>
+  </body>
+</html>

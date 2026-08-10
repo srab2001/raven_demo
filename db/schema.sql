@@ -12,3 +12,12 @@ CREATE TABLE IF NOT EXISTS users (
   approved_at TIMESTAMPTZ,
   approved_by TEXT
 );
+
+-- Admin-editable overrides for demo callouts/tooltips (see lib/contentManifest.ts).
+-- Also applied automatically by lib/db.ts (ensureSchema).
+CREATE TABLE IF NOT EXISTS content_overrides (
+  key TEXT PRIMARY KEY,
+  text TEXT NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_by TEXT
+);

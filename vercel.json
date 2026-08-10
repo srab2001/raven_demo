@@ -8,6 +8,7 @@
     { "source": "/demo3", "destination": "/demo3/index.html" },
     { "source": "/login", "destination": "/login/index.html" },
     { "source": "/pending", "destination": "/pending/index.html" },
-    { "source": "/admin", "destination": "/admin/index.html" }
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/how-its-built", "destination": "/how-its-built/index.html" }
   ]
 }
