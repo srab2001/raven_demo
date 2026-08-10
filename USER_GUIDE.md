@@ -26,12 +26,12 @@ This repository contains three interactive demo prototypes:
 3. Use the repository root as the project root.
 4. Keep the configured build command, `npm run build`, and output directory, `dist`.
 5. Deploy and visit the generated preview or production URL:
-   - `/` opens the demo index.
-   - `/demo1` opens Lighthouse Under Load.
-   - `/demo2` opens the 508-First Eligibility Wizard.
-   - `/demo3` opens the Vendor Rigor Console.
+   - [Production demo index](https://raven-squares-build-package-1.vercel.app) opens the demo index.
+   - [Lighthouse Under Load](https://raven-squares-build-package-1.vercel.app/demo1/) opens Demo 1.
+   - [508-First Eligibility Wizard](https://raven-squares-build-package-1.vercel.app/demo2/) opens Demo 2.
+   - [Vendor Rigor Console](https://raven-squares-build-package-1.vercel.app/demo3/) opens Demo 3.
 
 ## Notes
 
-- The current repo includes Vercel metadata in [.vercel/project.json](.vercel/project.json) and routing config in [vercel.json](vercel.json).
+- The deployment settings live in [vercel.json](vercel.json). The Vercel CLI creates local project metadata when it links the repository.
 - Each demo is a Vite + React + TypeScript app; the root build combines them into one Vercel deployment.

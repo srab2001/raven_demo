@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # RAVEN/SQUARES Demonstration Prototypes
 
 This package contains three deployable prototypes aligned to the Claude build brief:
@@ -33,7 +32,6 @@ npm run dev
 
 Deploy this repository as one Vercel project from the repository root. The root `npm run build` command builds all three apps and publishes them under `/demo1`, `/demo2`, and `/demo3`.
 
+Production site: [raven-squares-build-package-1.vercel.app](https://raven-squares-build-package-1.vercel.app)
+
 For a fuller walkthrough, see [USER_GUIDE.md](USER_GUIDE.md).
-=======
-# raven_demo
->>>>>>> e09a0a3536609db6a2da796897db736f317c7a4e
