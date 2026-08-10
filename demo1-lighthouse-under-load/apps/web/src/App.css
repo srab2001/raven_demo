@@ -76,3 +76,8 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid 
 .callout p { margin: 0; }
 body.callouts-hidden .callout { display: none; }
 .callout-toggle { position: fixed; bottom: 1rem; right: 1rem; z-index: 100; background: #d97706; color: white; font-weight: 700; border-radius: 999px; padding: 0.7rem 1.2rem; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2); }
+
+.tooltip-wrap { position: relative; display: inline-block; }
+.tooltip-bubble { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-8px); background: #0f172a; color: white; padding: 0.45rem 0.65rem; border-radius: 0.5rem; font-size: 0.75rem; line-height: 1.35; max-width: 220px; text-align: center; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.12s ease; z-index: 20; }
+.tooltip-bubble::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: #0f172a; }
+.tooltip-wrap:hover .tooltip-bubble, .tooltip-wrap:focus-within .tooltip-bubble { opacity: 1; visibility: visible; }
