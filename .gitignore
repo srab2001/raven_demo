@@ -3,3 +3,4 @@ dist/
 .vite/
 .vercel/
 .DS_Store
+.vercel
