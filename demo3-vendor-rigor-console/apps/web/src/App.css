@@ -77,3 +77,11 @@ td { padding: 0.6rem 0.75rem; border-bottom: 1px solid #e2e8f0; vertical-align: 
 .inline-input input, .inline-input textarea { padding: 0.5rem; border-radius: 0.5rem; border: 1px solid #94a3b8; font: inherit; }
 
 @media (max-width: 800px) { .guardrail-grid { grid-template-columns: 1fr; } .gate-row { flex-direction: column; align-items: flex-start; } }
+@media (max-width: 800px) { .panel-grid { grid-template-columns: 1fr; } .bar-row { grid-template-columns: 1fr; } .chaos-indicator { position: static; margin-bottom: 0.5rem; } }
+
+.callout { display: flex; gap: 0.5rem; align-items: flex-start; background: #fffbeb; border: 1px dashed #d97706; border-radius: 0.6rem; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.6rem; font-size: 0.85rem; color: #78350f; position: relative; }
+.callout::before { content: ''; position: absolute; top: -7px; left: 20px; width: 12px; height: 12px; background: #fffbeb; border-left: 1px dashed #d97706; border-top: 1px dashed #d97706; transform: rotate(45deg); }
+.callout-icon { font-size: 1rem; line-height: 1.4; flex-shrink: 0; }
+.callout p { margin: 0; }
+body.callouts-hidden .callout { display: none; }
+.callout-toggle { position: fixed; bottom: 1rem; right: 1rem; z-index: 100; background: #d97706; color: white; font-weight: 700; border-radius: 999px; padding: 0.7rem 1.2rem; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2); }

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Callout from './Callout'
 
 type GateStatus = 'passed' | 'failed' | 'armed'
 
@@ -54,6 +55,7 @@ export default function ShipChecklist() {
       <div className="actions">
         <button type="button" onClick={toggleStaging}>Re-run staging validation</button>
       </div>
+      <Callout>Click that button to fail gate 1 — watch the Ship button below actually disable itself, not just show a warning. Gate 4 stays "ARMED (post-ship)" on purpose: it doesn't block shipping, it activates after.</Callout>
       {shipReady ? (
         <div className="all-green-banner">All pre-ship gates green. Ship signed off by: R. Silva (author) + M. Patel (cross-review) + PM approval.</div>
       ) : (

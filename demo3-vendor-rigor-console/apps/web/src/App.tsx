@@ -4,6 +4,8 @@ import PrBoard from './components/PrBoard'
 import DashboardAttestation from './components/DashboardAttestation'
 import ShipChecklist from './components/ShipChecklist'
 import EmailGuardrail from './components/EmailGuardrail'
+import Callout from './components/Callout'
+import CalloutToggle from './components/CalloutToggle'
 
 type PanelKey = 'pr' | 'dashboard' | 'checklist' | 'email'
 
@@ -32,11 +34,13 @@ function App() {
           </button>
         ))}
       </nav>
+      <Callout>Four governance surfaces for the Patient Portal contract — every control on these tabs is interactive, not a static mockup.</Callout>
 
       {activePanel === 'pr' && <PrBoard />}
       {activePanel === 'dashboard' && <DashboardAttestation />}
       {activePanel === 'checklist' && <ShipChecklist />}
       {activePanel === 'email' && <EmailGuardrail />}
+      <CalloutToggle />
     </main>
   )
 }

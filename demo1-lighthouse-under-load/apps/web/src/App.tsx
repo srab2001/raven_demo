@@ -7,6 +7,8 @@ import EventLog, { type LogEntry, type LogLevel } from './components/EventLog'
 import EndpointHealth, { type EndpointStat } from './components/EndpointHealth'
 import ResultPanel, { type ResultView } from './components/ResultPanel'
 import BulkQueue from './components/BulkQueue'
+import Callout from './components/Callout'
+import CalloutToggle from './components/CalloutToggle'
 import { CircuitBreaker, type CircuitState } from './lib/circuitBreaker'
 import { validateFhirPatient, isEmptyBundle } from './lib/fhirValidator'
 import { callEndpoint, revokeToken, resetRateLimitWindow, HttpError, type ChaosMode } from './lib/lighthouseClient'
@@ -242,17 +244,28 @@ function App() {
             loading={lookupLoading}
             disabledReason={chaos === 'ratelimit' ? 'Rate-limit chaos routes lookups through the bulk queue below.' : undefined}
           />
+          <Callout>Enter any ICN and click <strong>Run lookup</strong> to simulate a real call to Patient/v0, Clinical/v0, and Coverage/v0 — the same three Lighthouse APIs a live integration would hit.</Callout>
           <ResultPanel view={resultView} />
           <LatencyWaterfall bars={latencyBars} />
+          <Callout>Real per-API timing, redrawn after every lookup. Watch this bar for Coverage/v0 when you switch to the "Slow / circuit breaker" scenario below.</Callout>
           <EndpointHealth endpoints={endpointStats} />
-          {chaos === 'ratelimit' && <BulkQueue bulkInput={bulkInput} onBulkInputChange={setBulkInput} onSubmit={submitBulk} queue={queue} />}
+          <Callout>Each tile is a live circuit-breaker state — CLOSED (green) is healthy, OPEN (red) means that endpoint tripped and is being served from cache instead of waiting.</Callout>
+          {chaos === 'ratelimit' && (
+            <>
+              <BulkQueue bulkInput={bulkInput} onBulkInputChange={setBulkInput} onSubmit={submitBulk} queue={queue} />
+              <Callout>429 responses are retried automatically with exponential backoff (1s → 2s → 4s…) — watch the status pill on each row change from "Retrying" to "Complete."</Callout>
+            </>
+          )}
         </section>
 
         <aside className="panel-stack">
           <ChaosToggle value={chaos} onChange={toggleChaos} />
+          <Callout>Switching scenarios here changes what the lookup actually returns — a real 401, a malformed FHIR payload, an empty bundle — not just the label on the result card.</Callout>
           <EventLog entries={log} />
+          <Callout>Every retry, cache decision, and re-auth is logged here as it happens — nothing about the failure handling is hidden from you.</Callout>
         </aside>
       </section>
+      <CalloutToggle />
     </main>
   )
 }

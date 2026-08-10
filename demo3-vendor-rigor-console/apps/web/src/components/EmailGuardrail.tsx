@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Callout from './Callout'
 
 export default function EmailGuardrail() {
   const [cc, setCc] = useState('')
@@ -53,6 +54,7 @@ export default function EmailGuardrail() {
         </div>
         <button type="button" className="send-button" disabled={!resolved} onClick={send}>Send</button>
         {!resolved && <p className="hint">↑ blocked until CC is resolved</p>}
+        <Callout>Send stays disabled until the guardrail on the right is resolved — this demo enforces the CC policy, it doesn't just describe it.</Callout>
         {sendLog.length > 0 && (
           <ul className="send-log">
             {sendLog.map((entry, index) => <li key={index}>{entry}</li>)}
