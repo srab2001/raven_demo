@@ -39,6 +39,8 @@ function App() {
   const [result, setResult] = useState<EligibilityResult | null>(defaultResult)
   const [scenario, setScenario] = useState<DemoScenario>('happy')
   const [log, setLog] = useState<string[]>(['System ready'])
+  const [lookupState, setLookupState] = useState<'ready' | 'loading' | 'complete'>('ready')
+  const [lookupCount, setLookupCount] = useState(0)
 
   const latencyBars = useMemo(() => {
     const base = scenario === 'slow' ? 3200 : 180
@@ -53,14 +55,25 @@ function App() {
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
+    if (lookupState === 'loading') return
+
     const nextResult: EligibilityResult = {
       name: 'A. Martinez',
       dob: '01/01/1950',
       priorityGroup: activeScenario.priorityGroup,
       coverage: activeScenario.coverage,
     }
-    setLog((current) => [...current, `Lookup submitted for ${icn} using ${activeScenario.label}`])
-    setResult(nextResult)
+    const nextLookupCount = lookupCount + 1
+
+    setLookupState('loading')
+    setResult(null)
+    setLog((current) => [...current, `Lookup ${nextLookupCount} started for ${icn} using ${activeScenario.label}`])
+    window.setTimeout(() => {
+      setResult(nextResult)
+      setLookupCount(nextLookupCount)
+      setLookupState('complete')
+      setLog((current) => [...current, `Lookup ${nextLookupCount} completed`])
+    }, scenario === 'slow' ? 1200 : 450)
   }
 
   const toggleScenario = (value: DemoScenario) => {
@@ -82,12 +95,16 @@ function App() {
           <form onSubmit={handleSubmit}>
             <label htmlFor="icn">ICN</label>
             <input id="icn" value={icn} onChange={(event) => setIcn(event.target.value)} />
-            <button type="submit">Run lookup</button>
+            <button type="submit" disabled={lookupState === 'loading'}>
+              {lookupState === 'loading' ? 'Looking up...' : 'Run lookup'}
+            </button>
           </form>
+          {lookupState === 'loading' && <p className="lookup-status" role="status">Querying eligibility services for {icn}...</p>}
           {result && (
             <article className="result-card" aria-live="polite">
               <p className="eyebrow">{activeScenario.severity}</p>
               <h3>Eligibility result</h3>
+              {lookupState === 'complete' && <p className="lookup-status" role="status">Lookup {lookupCount} completed for {icn}.</p>}
               <p>{activeScenario.description}</p>
               <p><strong>Name:</strong> {result.name}</p>
               <p><strong>DOB:</strong> {result.dob}</p>
