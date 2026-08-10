@@ -1,71 +1,218 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import './App.css'
+import EligibilityLookup from './components/EligibilityLookup'
+import LatencyWaterfall, { type LatencyBar } from './components/LatencyWaterfall'
+import ChaosToggle from './components/ChaosToggle'
+import EventLog, { type LogEntry, type LogLevel } from './components/EventLog'
+import EndpointHealth, { type EndpointStat } from './components/EndpointHealth'
+import ResultPanel, { type ResultView } from './components/ResultPanel'
+import BulkQueue from './components/BulkQueue'
+import { CircuitBreaker, type CircuitState } from './lib/circuitBreaker'
+import { validateFhirPatient, isEmptyBundle } from './lib/fhirValidator'
+import { callEndpoint, revokeToken, resetRateLimitWindow, HttpError, type ChaosMode } from './lib/lighthouseClient'
+import { backoffDelay, clearQueue, createQueue, loadQueue, persistQueue, type QueueItem } from './lib/retryQueue'
 
-type DemoScenario = 'happy' | 'token' | 'malformed' | 'missing' | 'slow' | 'rate-limit'
+type Endpoint = 'Patient/v0' | 'Clinical/v0' | 'Coverage/v0'
+const ENDPOINTS: Endpoint[] = ['Patient/v0', 'Clinical/v0', 'Coverage/v0']
 
-type EligibilityResult = {
-  name: string
-  dob: string
-  priorityGroup: string
-  coverage: string[]
-}
-
-type ScenarioMeta = {
-  label: string
-  description: string
-  severity: string
-  priorityGroup: string
-  coverage: string[]
-}
-
-const defaultResult: EligibilityResult = {
-  name: 'A. Martinez',
-  dob: '01/01/1950',
-  priorityGroup: 'Group 2',
-  coverage: ['Primary Care', 'Pharmacy'],
-}
-
-const scenarioMeta: Record<DemoScenario, ScenarioMeta> = {
-  happy: { label: 'Happy path', description: 'All services respond normally and the lookup completes in a single pass.', severity: 'Healthy', priorityGroup: 'Group 2', coverage: ['Primary Care', 'Pharmacy'] },
-  token: { label: 'Token issue', description: 'The token refresh endpoint is briefly failing, so the UI should surface the retry state.', severity: 'Warning', priorityGroup: 'Group 1', coverage: ['Primary Care', 'Behavioral Health'] },
-  malformed: { label: 'Malformed payload', description: 'A downstream payload arrives without the expected fields, which bubbles into a validation warning.', severity: 'Warning', priorityGroup: 'Group 3', coverage: ['Primary Care'] },
-  missing: { label: 'Missing data', description: 'One service returns no record for the member, which creates a partial result view.', severity: 'Alert', priorityGroup: 'Group 4', coverage: ['Emergency Care'] },
-  slow: { label: 'Slow response', description: 'The performance waterfall shows latency spikes that explain the delayed result.', severity: 'Critical', priorityGroup: 'Group 1', coverage: ['Primary Care', 'Specialty Care', 'Pharmacy'] },
-  'rate-limit': { label: 'Rate limit', description: 'A throttling response keeps the lookup from completing until the request is retried.', severity: 'Critical', priorityGroup: 'Group 2', coverage: ['Primary Care'] },
+function percentile(values: number[], p: number): number {
+  if (values.length === 0) return 0
+  const sorted = [...values].sort((a, b) => a - b)
+  const index = Math.min(sorted.length - 1, Math.floor((p / 100) * sorted.length))
+  return sorted[index]
 }
 
 function App() {
   const [icn, setIcn] = useState('1013925208V123456')
-  const [result, setResult] = useState<EligibilityResult | null>(defaultResult)
-  const [scenario, setScenario] = useState<DemoScenario>('happy')
-  const [log, setLog] = useState<string[]>(['System ready'])
+  const [bulkInput, setBulkInput] = useState('1013925208V123456, 1013925209V654321, 1013925210V112233')
+  const [chaos, setChaos] = useState<ChaosMode>('happy')
+  const [log, setLog] = useState<LogEntry[]>([{ id: 'init', ts: Date.now(), message: 'System ready', level: 'info' }])
+  const [resultView, setResultView] = useState<ResultView | null>(null)
+  const [latencyBars, setLatencyBars] = useState<LatencyBar[]>(ENDPOINTS.map((label) => ({ label, ms: 0 })))
+  const [endpointStats, setEndpointStats] = useState<EndpointStat[]>(ENDPOINTS.map((label) => ({ label, state: 'closed', p50: 0, p99: 0 })))
+  const [queue, setQueue] = useState<QueueItem[]>([])
 
-  const latencyBars = useMemo(() => {
-    const base = scenario === 'slow' ? 3200 : 180
-    return [
-      { label: 'Patient/v0', ms: scenario === 'slow' ? 1200 : 160 },
-      { label: 'Clinical/v0', ms: scenario === 'slow' ? 1400 : 190 },
-      { label: 'Coverage/v0', ms: scenario === 'slow' ? base : 220 },
-    ]
-  }, [scenario])
+  const breakersRef = useRef<Record<Endpoint, CircuitBreaker>>({
+    'Patient/v0': new CircuitBreaker(),
+    'Clinical/v0': new CircuitBreaker(),
+    'Coverage/v0': new CircuitBreaker(),
+  })
+  const latenciesRef = useRef<Record<Endpoint, number[]>>({ 'Patient/v0': [], 'Clinical/v0': [], 'Coverage/v0': [] })
+  const cacheRef = useRef<{ priorityGroup: string; coverage: string[]; timestamp: number }>({
+    priorityGroup: 'Group 2',
+    coverage: ['Primary Care', 'Pharmacy'],
+    timestamp: Date.now(),
+  })
 
-  const activeScenario = scenarioMeta[scenario]
+  useEffect(() => {
+    const unsubscribers = ENDPOINTS.map((endpoint) =>
+      breakersRef.current[endpoint].onChange((state: CircuitState) => {
+        setEndpointStats((current) => current.map((stat) => (stat.label === endpoint ? { ...stat, state } : stat)))
+      }),
+    )
+    const restored = loadQueue()
+    if (restored) setQueue(restored)
+    return () => unsubscribers.forEach((unsub) => unsub())
+  }, [])
 
-  const handleSubmit = (event: FormEvent) => {
-    event.preventDefault()
-    const nextResult: EligibilityResult = {
-      name: 'A. Martinez',
-      dob: '01/01/1950',
-      priorityGroup: activeScenario.priorityGroup,
-      coverage: activeScenario.coverage,
+  const addLog = useCallback((message: string, level: LogLevel = 'info') => {
+    setLog((current) => [...current, { id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, ts: Date.now(), message, level }])
+  }, [])
+
+  const recordLatency = useCallback((endpoint: Endpoint, ms: number) => {
+    const bucket = latenciesRef.current[endpoint]
+    bucket.push(ms)
+    if (bucket.length > 20) bucket.shift()
+    setLatencyBars((current) => current.map((bar) => (bar.label === endpoint ? { ...bar, ms } : bar)))
+    setEndpointStats((current) => current.map((stat) => (stat.label === endpoint ? { ...stat, p50: percentile(bucket, 50), p99: percentile(bucket, 99) } : stat)))
+  }, [])
+
+  const callWithReauth = useCallback(
+    async (endpoint: Endpoint, mode: ChaosMode) => {
+      try {
+        const outcome = await callEndpoint(endpoint, mode)
+        recordLatency(endpoint, outcome.ms)
+        breakersRef.current[endpoint].recordSuccess()
+        return outcome
+      } catch (error) {
+        if (error instanceof HttpError && error.status === 401) {
+          addLog(`${endpoint} → 401 Unauthorized (token revoked)`, 'error')
+          addLog('Re-authenticating via OAuth2 client-credentials…', 'warn')
+          const outcome = await callEndpoint(endpoint, 'happy')
+          addLog(`${endpoint} → 200 OK after re-auth`, 'success')
+          recordLatency(endpoint, outcome.ms)
+          return outcome
+        }
+        throw error
+      }
+    },
+    [addLog, recordLatency],
+  )
+
+  const toggleChaos = (mode: ChaosMode) => {
+    setChaos(mode)
+    if (mode === 'token') {
+      revokeToken()
+      addLog('Token revoked — next call receives 401', 'warn')
     }
-    setLog((current) => [...current, `Lookup submitted for ${icn} using ${activeScenario.label}`])
-    setResult(nextResult)
+    if (mode === 'ratelimit') resetRateLimitWindow()
+    addLog(`Scenario changed to ${mode}`, 'info')
   }
 
-  const toggleScenario = (value: DemoScenario) => {
-    setScenario(value)
-    setLog((current) => [...current, `Scenario changed to ${scenarioMeta[value].label}`])
+  const runLookup = async () => {
+    if (chaos === 'ratelimit') {
+      enqueue([icn])
+      return
+    }
+
+    addLog(`Lookup submitted for ${icn} (${chaos})`, 'info')
+
+    const patient = await callWithReauth('Patient/v0', chaos)
+    const clinical = await callWithReauth('Clinical/v0', chaos)
+
+    if (chaos === 'slow') {
+      const { data: coverage, wasTripped } = await breakersRef.current['Coverage/v0'].guard(
+        () => callWithReauth('Coverage/v0', chaos),
+        async () => {
+          addLog('Coverage/v0 exceeded 3s trip threshold — circuit OPEN', 'error')
+          return { endpoint: 'Coverage/v0' as const, ok: true, status: 200, ms: 0, payload: {} }
+        },
+      )
+      if (wasTripped) {
+        const ageMs = Date.now() - cacheRef.current.timestamp
+        const staleLabel = ageMs < 60_000 ? `${Math.max(1, Math.round(ageMs / 1000))} seconds ago` : `${Math.round(ageMs / 60_000)} minutes ago`
+        addLog('Serving cached Coverage/v0 result while circuit is open', 'warn')
+        setResultView({ kind: 'stale', name: '[REDACTED]', dob: '[REDACTED]', priorityGroup: cacheRef.current.priorityGroup, coverage: cacheRef.current.coverage, staleLabel })
+      } else {
+        recordLatency('Coverage/v0', coverage.ms)
+        cacheRef.current = { priorityGroup: 'Group 2', coverage: ['Primary Care', 'Pharmacy'], timestamp: Date.now() }
+        setResultView({ kind: 'ok', name: '[REDACTED]', dob: '[REDACTED]', priorityGroup: 'Group 2', coverage: ['Primary Care', 'Pharmacy'] })
+        addLog('Coverage/v0 → 200 OK, circuit stays CLOSED', 'success')
+      }
+      return
+    }
+
+    const validation = validateFhirPatient(patient.payload)
+    if (!validation.valid) {
+      const referenceId = `A${Math.floor(Math.random() * 90 + 10)}C-${Math.floor(Math.random() * 9000 + 1000)}`
+      addLog(`Patient/v0 payload failed FHIR R4 validation (${validation.violations.length} violations) — ref ${referenceId}`, 'error')
+      setResultView({ kind: 'malformed', referenceId, violations: validation.violations, rawPayload: patient.payload })
+      await callWithReauth('Coverage/v0', chaos)
+      return
+    }
+
+    const coverage = await callWithReauth('Coverage/v0', chaos)
+    if (isEmptyBundle(coverage.payload)) {
+      addLog('Coverage/v0 returned an empty bundle (0 results)', 'warn')
+      setResultView({
+        kind: 'missing',
+        name: '[REDACTED]',
+        dob: '[REDACTED]',
+        priorityGroup: 'Group 2',
+        onFallback: (source) => addLog(`Fallback query sent to ${source === 'verification' ? 'Verification API' : 'VADIR'} (mock)`, 'info'),
+      })
+      return
+    }
+
+    cacheRef.current = { priorityGroup: 'Group 2', coverage: ['Primary Care', 'Pharmacy'], timestamp: Date.now() }
+    addLog(`Lookup complete for ${icn}`, 'success')
+    setResultView({ kind: 'ok', name: '[REDACTED]', dob: '[REDACTED]', priorityGroup: 'Group 2', coverage: ['Primary Care', 'Pharmacy'] })
+    void clinical
+  }
+
+  const enqueue = (icns: string[]) => {
+    const items = createQueue(icns)
+    setQueue(items)
+    persistQueue(items)
+    addLog(`Queued ${items.length} lookup${items.length === 1 ? '' : 's'} for retry-queue processing`, 'info')
+    items.forEach((item) => processQueueItem(item.icn))
+  }
+
+  const processQueueItem = useCallback(
+    async (icnValue: string) => {
+      const attempt = async (attemptNumber: number): Promise<void> => {
+        try {
+          const outcome = await callEndpoint('Coverage/v0', 'ratelimit')
+          recordLatency('Coverage/v0', outcome.ms)
+          addLog(`${icnValue} → 200 OK after ${attemptNumber} attempt${attemptNumber === 1 ? '' : 's'}`, 'success')
+          setQueue((current) => {
+            const next = current.map((item) => (item.icn === icnValue ? { ...item, status: 'complete' as const, attempts: attemptNumber } : item))
+            persistQueue(next)
+            return next
+          })
+        } catch (error) {
+          const retryAfterMs = error instanceof HttpError ? error.retryAfterMs : undefined
+          addLog(`${icnValue} → 429 Too Many Requests (attempt ${attemptNumber + 1})`, 'error')
+          if (attemptNumber >= 5) {
+            setQueue((current) => {
+              const next = current.map((item) => (item.icn === icnValue ? { ...item, status: 'failed' as const, attempts: attemptNumber + 1 } : item))
+              persistQueue(next)
+              return next
+            })
+            return
+          }
+          const delay = backoffDelay(attemptNumber, retryAfterMs)
+          setQueue((current) => {
+            const next = current.map((item) => (item.icn === icnValue ? { ...item, status: 'retrying' as const, attempts: attemptNumber + 1, nextRetryAt: Date.now() + delay } : item))
+            persistQueue(next)
+            return next
+          })
+          setTimeout(() => attempt(attemptNumber + 1), delay)
+        }
+      }
+      await attempt(0)
+    },
+    [addLog, recordLatency],
+  )
+
+  const submitBulk = () => {
+    const icns = bulkInput
+      .split(',')
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .slice(0, 5)
+    clearQueue()
+    enqueue(icns)
   }
 
   return (
@@ -77,51 +224,17 @@ function App() {
       </header>
 
       <section className="panel-grid">
-        <section className="panel">
-          <h2>Eligibility lookup</h2>
-          <form onSubmit={handleSubmit}>
-            <label htmlFor="icn">ICN</label>
-            <input id="icn" value={icn} onChange={(event) => setIcn(event.target.value)} />
-            <button type="submit">Run lookup</button>
-          </form>
-          {result && (
-            <article className="result-card" aria-live="polite">
-              <p className="eyebrow">{activeScenario.severity}</p>
-              <h3>Eligibility result</h3>
-              <p>{activeScenario.description}</p>
-              <p><strong>Name:</strong> {result.name}</p>
-              <p><strong>DOB:</strong> {result.dob}</p>
-              <p><strong>Priority group:</strong> {result.priorityGroup}</p>
-              <p><strong>Coverage:</strong> {result.coverage.join(', ')}</p>
-            </article>
-          )}
-          <div className="bars" aria-label="Latency waterfall">
-            {latencyBars.map((bar) => (
-              <div key={bar.label} className="bar-row">
-                <span>{bar.label}</span>
-                <div className="bar-track"><div className="bar-fill" style={{ width: `${Math.min(bar.ms / 4000, 1) * 100}%` }} /></div>
-                <span>{bar.ms}ms</span>
-              </div>
-            ))}
-          </div>
+        <section className="panel-stack">
+          <EligibilityLookup icn={icn} onIcnChange={setIcn} onSubmit={runLookup} disabledReason={chaos === 'ratelimit' ? 'Rate-limit chaos routes lookups through the bulk queue below.' : undefined} />
+          <ResultPanel view={resultView} />
+          <LatencyWaterfall bars={latencyBars} />
+          <EndpointHealth endpoints={endpointStats} />
+          {chaos === 'ratelimit' && <BulkQueue bulkInput={bulkInput} onBulkInputChange={setBulkInput} onSubmit={submitBulk} queue={queue} />}
         </section>
 
-        <aside className="panel">
-          <h2>Chaos controls</h2>
-          <div className="controls">
-            {(['happy', 'token', 'malformed', 'missing', 'slow', 'rate-limit'] as DemoScenario[]).map((value) => (
-              <button key={value} type="button" className={scenario === value ? 'active' : ''} onClick={() => toggleScenario(value)}>{value}</button>
-            ))}
-          </div>
-          <article className="result-card">
-            <h3>Scenario focus</h3>
-            <p><strong>{activeScenario.label}</strong></p>
-            <p>{activeScenario.description}</p>
-          </article>
-          <h3>Event log</h3>
-          <ol className="log-list">
-            {log.map((entry, index) => <li key={`${entry}-${index}`}>{entry}</li>)}
-          </ol>
+        <aside className="panel-stack">
+          <ChaosToggle value={chaos} onChange={toggleChaos} />
+          <EventLog entries={log} />
         </aside>
       </section>
     </main>
