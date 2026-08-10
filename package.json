@@ -2,7 +2,6 @@
   "name": "raven-squares-demos",
   "private": true,
   "version": "1.0.0",
-  "type": "module",
   "workspaces": [
     "demo1-lighthouse-under-load/apps/web",
     "demo2-508-eligibility-wizard",
@@ -12,8 +11,7 @@
     "build": "rm -rf dist && npm run build --workspaces && mkdir -p dist && cp site/index.html dist/index.html && cp -R demo1-lighthouse-under-load/apps/web/dist dist/demo1 && cp -R demo2-508-eligibility-wizard/dist dist/demo2 && cp -R demo3-vendor-rigor-console/apps/web/dist dist/demo3 && cp -R login dist/login && cp -R pending dist/pending && cp -R admin dist/admin"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.1.0",
-    "jose": "^6.2.8"
+    "@neondatabase/serverless": "^1.1.0"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",
