@@ -24,6 +24,8 @@ export const CONTENT_MANIFEST: ContentItem[] = [
   { key: 'demo1.tooltip.missing', demo: 'Demo 1', label: 'Tooltip: Empty bundle', default: 'Coverage/v0 returns zero results while Patient/v0 still succeeds — an empty result, not proof of ineligibility.' },
   { key: 'demo1.tooltip.slow', demo: 'Demo 1', label: 'Tooltip: Slow / circuit breaker', default: 'Coverage/v0 hangs for 12s. The breaker trips at the 3s mark and serves cached data instead of making you wait.' },
   { key: 'demo1.tooltip.ratelimit', demo: 'Demo 1', label: 'Tooltip: 429 rate limit', default: 'Simulates a real 429 on the 3rd and 5th call in a 10s window — routes lookups through the retry queue below.' },
+  { key: 'demo1.tooltip.verificationapi', demo: 'Demo 1', label: 'Tooltip: Query Verification API button', default: "VA's Verification API — confirms identity and service history independently of the Coverage/v0 FHIR endpoint." },
+  { key: 'demo1.tooltip.vadir', demo: 'Demo 1', label: 'Tooltip: Query VADIR button', default: "VADIR (Veterans Data Integration and Reuse) — VA's cross-system identity and eligibility source of record, used here as a fallback when Coverage/v0 has no data." },
 
   { key: 'demo2.callout.intro', demo: 'Demo 2', label: 'Wizard intro callout', default: 'Each step asks exactly one question — this wizard is designed to be usable with a keyboard alone or a screen reader, not just visually.' },
   { key: 'demo2.callout.axepanel', demo: 'Demo 2', label: 'Axe panel callout', default: "This runs a real axe-core scan against the current page on every step — it's a live result, not a canned checklist." },

@@ -1,10 +1,10 @@
 # RAVEN/SQUARES Demonstration Prototypes
 
-This package contains three deployable prototypes aligned to the Claude build brief:
+This package contains three deployable prototypes, built against the VA Lighthouse APIs, Section 508, and the Patient Portal contract's own rigor requirements, aligned to the Claude build brief:
 
-- Demo 1: Lighthouse Under Load — chaos-injection eligibility lookup with a live event log, endpoint health tiles, and a circuit breaker. See [demo1-lighthouse-under-load/docs/FAILURE_MODE_CATALOG.md](demo1-lighthouse-under-load/docs/FAILURE_MODE_CATALOG.md).
-- Demo 2: 508-First Eligibility Wizard — keyboard-first wizard with a live axe-core panel, an NVDA-phrasing screen-reader simulator, a Flesch-Kincaid reading-level meter, and a rules-vs-AI decision comparison. See [demo2-508-eligibility-wizard/docs/DECISION_TABLES.md](demo2-508-eligibility-wizard/docs/DECISION_TABLES.md).
-- Demo 3: Vendor Rigor Console — PR cross-review board, daily dashboard attestation, ship-checklist release gate, and a government-email guardrail composer.
+- Demo 1: Lighthouse Under Load — a Veteran eligibility lookup against Patient/v0, Clinical/v0, and Coverage/v0 with chaos-injection failure modes, a live event log, endpoint health tiles, and a circuit breaker. See [demo1-lighthouse-under-load/docs/FAILURE_MODE_CATALOG.md](demo1-lighthouse-under-load/docs/FAILURE_MODE_CATALOG.md).
+- Demo 2: 508-First Eligibility Wizard — a keyboard-first wizard with a live axe-core panel, an NVDA-phrasing screen-reader simulator, a Flesch-Kincaid reading-level meter, and a 38 CFR-cited rules-vs-AI decision comparison. See [demo2-508-eligibility-wizard/docs/DECISION_TABLES.md](demo2-508-eligibility-wizard/docs/DECISION_TABLES.md).
+- Demo 3: Vendor Rigor Console — the four rigor controls (cross-team PR review, daily dashboard attestation, a ship-checklist release gate, and a PDS-Health email guardrail) the government asked for after reduced staffing during the Aug–Sep Oracle cutover opened gaps on the Patient Portal.
 
 Each demo's `docs/` folder (where present) notes where this build simplifies
 or deviates from the original build brief — mainly: no backend proxy or real
