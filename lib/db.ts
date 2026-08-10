@@ -1,10 +1,23 @@
-import { neon } from '@neondatabase/serverless'
+import { neon, type NeonQueryFunction } from '@neondatabase/serverless'
 
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL is not set')
+// Lazily initialized: importing this module must never throw, or a missing
+// DATABASE_URL crashes the whole serverless function at cold start (before
+// any handler's try/catch can run) instead of failing one request cleanly.
+let client: NeonQueryFunction<false, false> | null = null
+
+function getClient(): NeonQueryFunction<false, false> {
+  if (!client) {
+    if (!process.env.DATABASE_URL) {
+      throw new Error('DATABASE_URL is not set')
+    }
+    client = neon(process.env.DATABASE_URL)
+  }
+  return client
 }
 
-export const sql = neon(process.env.DATABASE_URL)
+export function sql(strings: TemplateStringsArray, ...values: unknown[]) {
+  return getClient()(strings, ...values)
+}
 
 let schemaReady = false
 
