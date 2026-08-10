@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Admin panel — RAVEN/SQUARES demos" />
+    <link rel="icon" href="data:," />
+    <title>Admin — RAVEN/SQUARES Demos</title>
+    <style>
+      :root { color: #13233f; background: #eef3f8; font-family: Arial, sans-serif; }
+      * { box-sizing: border-box; }
+      body { margin: 0; }
+      header { background: #13233f; color: white; padding: 1.25rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+      header a { color: #cbe8ff; text-decoration: none; }
+      main { max-width: 960px; margin: 2rem auto; padding: 0 1rem 3rem; }
+      .card { background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08); margin-bottom: 1.5rem; }
+      h1 { font-size: 1.4rem; margin: 0; }
+      h2 { font-size: 1.1rem; margin-top: 0; }
+      form.invite { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+      input[type="email"] { flex: 1; min-width: 220px; padding: 0.65rem; border-radius: 0.5rem; border: 1px solid #94a3b8; font: inherit; }
+      button { border: none; border-radius: 999px; padding: 0.6rem 1.1rem; background: #0071bc; color: white; cursor: pointer; font: inherit; font-weight: 700; }
+      button.danger { background: #b91c1c; }
+      button.ghost { background: #e2e8f0; color: #13233f; }
+      button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+      table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+      th, td { text-align: left; padding: 0.6rem 0.5rem; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
+      .pill { padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; }
+      .pill-approved { background: #dcfce7; color: #166534; }
+      .pill-pending { background: #fef3c7; color: #92400e; }
+      .pill-invited { background: #dbeafe; color: #1e40af; }
+      .pill-revoked { background: #fee2e2; color: #991b1b; }
+      .row-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+      #status { margin-top: 0.75rem; font-size: 0.85rem; }
+      .status-error { color: #b91c1c; }
+      .status-ok { color: #166534; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>RAVEN/SQUARES admin</h1>
+      <div><span id="whoami"></span> · <a href="/api/auth/signout">Sign out</a> · <a href="/">Back to demos</a></div>
+    </header>
+    <main>
+      <section class="card">
+        <h2>Invite a reviewer</h2>
+        <form class="invite" id="invite-form">
+          <label for="invite-email" class="visually-hidden">Email to invite</label>
+          <input id="invite-email" type="email" placeholder="reviewer@agency.gov" required />
+          <button type="submit">Invite (pre-approve)</button>
+        </form>
+        <p id="status"></p>
+      </section>
+
+      <section class="card">
+        <h2>Users</h2>
+        <table>
+          <thead>
+            <tr><th>Email</th><th>Name</th><th>Status</th><th>Role</th><th>Requested</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="users-body"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <script>
+      var statusEl = document.getElementById('status')
+
+      function setStatus(message, ok) {
+        statusEl.textContent = message
+        statusEl.className = ok ? 'status-ok' : 'status-error'
+      }
+
+      function pillClass(status) {
+        return 'pill pill-' + status
+      }
+
+      function formatDate(value) {
+        if (!value) return '—'
+        var date = new Date(value)
+        return isNaN(date.getTime()) ? '—' : date.toLocaleString()
+      }
+
+      async function loadWhoAmI() {
+        var response = await fetch('/api/session')
+        if (!response.ok) {
+          document.getElementById('whoami').textContent = 'Not signed in'
+          return
+        }
+        var data = await response.json()
+        document.getElementById('whoami').textContent = data.email + ' (' + data.role + ')'
+      }
+
+      async function loadUsers() {
+        var response = await fetch('/api/admin/users')
+        if (!response.ok) {
+          setStatus('Could not load users — are you an approved admin?', false)
+          return
+        }
+        var data = await response.json()
+        var body = document.getElementById('users-body')
+        body.innerHTML = ''
+        data.users.forEach(function (user) {
+          var row = document.createElement('tr')
+
+          var actions = []
+          if (user.status !== 'approved') actions.push('<button data-action="approve" data-email="' + user.email + '">Approve</button>')
+          if (user.status !== 'revoked') actions.push('<button class="danger" data-action="revoke" data-email="' + user.email + '">Revoke</button>')
+
+          row.innerHTML =
+            '<td>' + user.email + '</td>' +
+            '<td>' + (user.name || '—') + '</td>' +
+            '<td><span class="' + pillClass(user.status) + '">' + user.status + '</span></td>' +
+            '<td>' + user.role + '</td>' +
+            '<td>' + formatDate(user.created_at) + '</td>' +
+            '<td><div class="row-actions">' + actions.join('') + '</div></td>'
+          body.appendChild(row)
+        })
+      }
+
+      document.getElementById('users-body').addEventListener('click', async function (event) {
+        var button = event.target.closest('button[data-action]')
+        if (!button) return
+        var action = button.getAttribute('data-action')
+        var email = button.getAttribute('data-email')
+        var response = await fetch('/api/admin/' + action, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email }),
+        })
+        var data = await response.json()
+        if (!response.ok) {
+          setStatus(data.error || 'Action failed', false)
+          return
+        }
+        setStatus(action + 'd ' + email, true)
+        loadUsers()
+      })
+
+      document.getElementById('invite-form').addEventListener('submit', async function (event) {
+        event.preventDefault()
+        var email = document.getElementById('invite-email').value.trim()
+        var response = await fetch('/api/admin/invite', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email }),
+        })
+        var data = await response.json()
+        if (!response.ok) {
+          setStatus(data.error || 'Invite failed', false)
+          return
+        }
+        setStatus('Invited ' + email, true)
+        document.getElementById('invite-email').value = ''
+        loadUsers()
+      })
+
+      loadWhoAmI()
+      loadUsers()
+    </script>
+  </body>
+</html>
