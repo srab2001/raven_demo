@@ -27,6 +27,33 @@ An admin can edit this callout and tooltip text — for any of the three
 demos — from the "Edit demo copy" section on `/admin`, with no code deploy
 required. Each item can be reset to its original default at any time.
 
+## Under the hood
+
+`/how-its-built` is a fourth, evaluator-facing page that walks through how
+the platform itself is set up, wired together, and monitored — using the
+same "show it live, don't just claim it" approach as the three demos, aimed
+at the platform instead. It covers, with live data where possible:
+
+1. **Setting up the instance** — which pieces exist (Edge Middleware, API
+   routes, Neon Postgres, Google OAuth) and a live check of which required
+   environment variables are set and whether the database is reachable
+   right now.
+2. **How the elements connect** — step-by-step walkthroughs of the Google
+   sign-in flow and the content-edit flow, with the "why" behind each step.
+3. **UI construction and data flow** — a live split-screen editor: change a
+   callout's text on the left and watch it change on an embedded demo page
+   on the right, with the exact API call annotated below it.
+4. **Errors, live** — buttons that call the real admin API without a
+   session, and with an invalid content key, to show the actual rejection
+   response — plus a case study of the real production incident behind
+   [docs/LESSONS-LEARNED.md](docs/LESSONS-LEARNED.md).
+5. **Live status** — real signals (database reachability, your session,
+   content-system health, current deployment) rather than decorative UI.
+
+Any approved reviewer can view `/how-its-built`; saving or resetting a
+content item from its live editor still requires an admin session, same as
+`/admin`.
+
 ## How to run locally
 
 1. Open a terminal in the repository root.

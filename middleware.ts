@@ -1,7 +1,7 @@
 import { readCookie, verifySession, SESSION_COOKIE_NAME } from './lib/session'
 
 export const config = {
-  matcher: ['/', '/demo1/:path*', '/demo2/:path*', '/demo3/:path*', '/admin/:path*'],
+  matcher: ['/', '/demo1/:path*', '/demo2/:path*', '/demo3/:path*', '/admin/:path*', '/how-its-built/:path*'],
 }
 
 export default async function middleware(request: Request) {
