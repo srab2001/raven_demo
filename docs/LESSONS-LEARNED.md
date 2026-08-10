@@ -97,3 +97,49 @@ Discovered and fixed in [srab2001/raven_demo](https://github.com/srab2001/raven_
 while building Google OAuth + admin-approval gating for three demo apps.
 See [docs/ADMIN_AUTH.md](../docs/ADMIN_AUTH.md) in that repo for the
 feature-level writeup and troubleshooting checklist.
+
+## "Verified" against a stale build, and a race condition hidden by it
+
+**Context:** building the `/how-its-built` walkthrough page (a static HTML
+page with inline JS, no bundler), including a live editor that saves and
+resets content via the same admin API the `/admin` panel uses.
+
+**What happened:** Playwright verification against the built `dist/`
+output kept failing on the save/reset flow — the success message
+(`"Saved..."`) never appeared, even though request logging showed the
+mocked API call completing successfully. An hour of debugging (manual
+in-page `fetch()` calls, request/response logging, checking for duplicate
+element IDs) all came up clean — because the actual bug was elsewhere: the
+source file (`how-its-built/index.html`) had been edited after the last
+`npm run build`, so every verification run was testing the **old, unbuilt
+copy** in `dist/`. `diff`-ing the source against the built copy immediately
+showed they'd diverged.
+
+Once rebuilt and re-tested against the fresh output, a second, real bug
+surfaced: the save/reset handler set a success message on `#editor-result`,
+then called `loadContentItems()` to refresh the dropdown — which
+re-selected the current item and, as a side effect, cleared that same
+success message a moment later. The success message. That real bug had
+been masked by the first (test-infrastructure) bug the whole time — it
+takes rebuilding before every check.
+
+**Fixes:**
+
+- Only clear a status/result message on a *user-initiated* action (e.g.
+  changing the dropdown selection), never as a side effect of a data
+  refresh that happens to run afterward. Any "briefly show success, then
+  get silently overwritten" UI bug is invisible in a glance-and-move-on
+  manual test but fails deterministically the moment something actually
+  waits for the message and checks it.
+- Re-run the build (or whatever compiles source → served output) *every
+  time* before re-verifying, not just once at the start of a debugging
+  session. A stale build produces confusing, misleading debug output that
+  looks like it's pointing at one bug (routing, mocking, element lookup)
+  when the real cause is that the fix under test was never actually
+  served.
+
+**Takeaway:** this is the same shape as the ESM/CommonJS incident above —
+"the build looks fine" isn't the same claim as "the thing I'm testing
+reflects my latest change." Whenever a check that should pass keeps
+failing for reasons that don't add up, verify the artifact under test is
+actually current before spending more time on the failure itself.
