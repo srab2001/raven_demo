@@ -21,6 +21,12 @@ workflow, and known limitations.
   below for why.
 - `/api/admin/*` (users/approve/invite/revoke, content) requires an admin
   session and operates on the `users` / `content_overrides` tables.
+- `/api/pr-board` (Demo 3's PR board) allows GET/POST for any valid
+  session — any approved viewer can list or add a PR entry — but requires
+  an admin session for DELETE, operating on the `pr_board_entries` table.
+  Cross-reviewer/quality/state for a PR row stay client-side and ephemeral
+  (same as the seeded rows); only the base entry (title/author/team)
+  persists.
 - `/api/status` requires any valid session (not admin-only) and reports
   boolean presence of required env vars, live database reachability, a
   content-system summary, and the current deployment's commit/branch/env

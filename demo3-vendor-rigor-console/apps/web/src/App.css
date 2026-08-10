@@ -26,6 +26,14 @@ td { padding: 0.6rem 0.75rem; border-bottom: 1px solid #e2e8f0; vertical-align: 
 .state-tertiary { background: #2563eb; }
 .bot-log { list-style: none; padding: 0; margin: 0.75rem 0; font-size: 0.85rem; color: #166534; }
 .footnote { color: #94a3b8; font-size: 0.8rem; margin-top: 1rem; }
+button.danger { background: #b91c1c; }
+
+.add-pr-form { margin-top: 1rem; border-top: 1px solid #e2e8f0; padding-top: 1rem; }
+.add-pr-form h3 { font-size: 0.95rem; margin: 0 0 0.5rem; }
+.add-pr-fields { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: end; }
+.add-pr-fields label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.8rem; color: #475569; }
+.add-pr-fields input, .add-pr-fields select { padding: 0.5rem; border-radius: 0.5rem; border: 1px solid #94a3b8; font: inherit; min-width: 160px; }
+.add-pr-error { color: #b91c1c; font-size: 0.85rem; margin: 0.5rem 0 0; }
 
 .rotation-grid { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-top: 0.75rem; }
 .rotation-card { border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 0.75rem; }
