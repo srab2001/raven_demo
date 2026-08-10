@@ -1,8 +1,7 @@
-import { createRemoteJWKSet, jwtVerify } from 'jose'
+import { verifyGoogleIdToken } from './jwt'
 
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token'
-const GOOGLE_JWKS = createRemoteJWKSet(new URL('https://www.googleapis.com/oauth2/v3/certs'))
 
 function requireEnv(name: string): string {
   const value = process.env[name]
@@ -47,10 +46,7 @@ export async function exchangeCodeForIdToken(code: string, redirectUri: string):
   const tokenSet = (await response.json()) as { id_token?: string }
   if (!tokenSet.id_token) throw new Error('Google token response missing id_token')
 
-  const { payload } = await jwtVerify(tokenSet.id_token, GOOGLE_JWKS, {
-    issuer: ['https://accounts.google.com', 'accounts.google.com'],
-    audience: requireEnv('GOOGLE_CLIENT_ID'),
-  })
+  const payload = await verifyGoogleIdToken(tokenSet.id_token, requireEnv('GOOGLE_CLIENT_ID'))
 
   if (typeof payload.email !== 'string' || typeof payload.sub !== 'string') {
     throw new Error('Google id_token missing required claims')

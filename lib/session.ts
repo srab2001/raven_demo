@@ -1,12 +1,12 @@
-import { SignJWT, jwtVerify } from 'jose'
+import { signHS256, verifyHS256 } from './jwt'
 
 const SESSION_COOKIE = 'session'
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7 // 7 days
 
-function secretKey() {
+function requireSecret(): string {
   const secret = process.env.SESSION_SECRET
   if (!secret) throw new Error('SESSION_SECRET is not set')
-  return new TextEncoder().encode(secret)
+  return secret
 }
 
 export type SessionPayload = {
@@ -17,17 +17,13 @@ export type SessionPayload = {
 }
 
 export async function signSession(payload: SessionPayload): Promise<string> {
-  return new SignJWT(payload)
-    .setProtectedHeader({ alg: 'HS256' })
-    .setIssuedAt()
-    .setExpirationTime(`${SESSION_TTL_SECONDS}s`)
-    .sign(secretKey())
+  return signHS256(payload, requireSecret(), SESSION_TTL_SECONDS)
 }
 
 export async function verifySession(token: string): Promise<SessionPayload | null> {
   try {
-    const { payload } = await jwtVerify(token, secretKey())
-    if (typeof payload.email !== 'string' || typeof payload.role !== 'string') return null
+    const payload = await verifyHS256(token, requireSecret())
+    if (!payload || typeof payload.email !== 'string' || typeof payload.role !== 'string') return null
     return payload as unknown as SessionPayload
   } catch {
     return null
