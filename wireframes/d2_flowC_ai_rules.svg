@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 470" width="800" height="470" font-family="Arial, sans-serif">
+<rect width="800" height="470" fill="#FFFFFF"/>
+<rect x="0" y="0" width="800" height="32" fill="#112E51"/>
+<text x="16" y="21" fill="#FFFFFF" font-size="14" font-weight="bold">RAVEN Demo — Flow C: Rules vs. AI Toggle</text>
+<rect x="20" y="50" width="760" height="400" fill="#F1F1F1" stroke="#5B616B" stroke-width="1"/>
+<rect x="20" y="50" width="760" height="24" fill="#E1E1E1"/>
+<circle cx="30" cy="62" r="4" fill="#FF5F57"/>
+<circle cx="44" cy="62" r="4" fill="#FEBC2E"/>
+<circle cx="58" cy="62" r="4" fill="#28C840"/>
+<rect x="76" y="56" width="688" height="14" fill="#FFFFFF" rx="2"/>
+<text x="84" y="66" fill="#5B616B" font-size="10">eligibility-wizard.va.gov/result</text>
+<text x="40" y="100" fill="#112E51" font-size="18" font-weight="bold">Your Recommended Benefits</text>
+<text x="40" y="122" fill="#5B616B" font-size="12">Based on your answers, here are the programs you likely qualify for.</text>
+
+<text x="40" y="155" fill="#112E51" font-size="12" font-weight="bold">Decision engine:</text>
+<rect x="150" y="140" width="90" height="26" fill="#0071BC"/>
+<text x="168" y="158" fill="#FFFFFF" font-size="11" font-weight="bold">Rules</text>
+<rect x="245" y="140" width="90" height="26" fill="#FFFFFF" stroke="#0071BC"/>
+<text x="273" y="158" fill="#0071BC" font-size="11" font-weight="bold">AI</text>
+<text x="345" y="158" fill="#5B616B" font-size="10">(toggle to compare)</text>
+
+<rect x="40" y="185" width="350" height="230" fill="#FFFFFF" stroke="#112E51" stroke-width="1"/>
+<rect x="40" y="185" width="350" height="30" fill="#112E51"/>
+<text x="52" y="205" fill="#FFFFFF" font-size="12" font-weight="bold">RULES MODE</text>
+<text x="52" y="235" fill="#112E51" font-size="13" font-weight="bold">→ HUD-VASH intake</text>
+<text x="52" y="255" fill="#112E51" font-size="13" font-weight="bold">→ SSVF referral</text>
+<text x="52" y="275" fill="#112E51" font-size="13" font-weight="bold">→ VA Health Care (Priority 3)</text>
+
+<text x="52" y="305" fill="#5B616B" font-size="10" font-family="monospace">IF discharge IN (honorable, general)</text>
+<text x="52" y="320" fill="#5B616B" font-size="10" font-family="monospace">AND homeless_risk == true</text>
+<text x="52" y="335" fill="#5B616B" font-size="10" font-family="monospace">AND separation &lt; 5 years</text>
+<text x="52" y="350" fill="#5B616B" font-size="10" font-family="monospace">AND has_va_healthcare == false</text>
+<text x="52" y="365" fill="#112E51" font-size="10" font-family="monospace">→ HUD-VASH + SSVF + Priority 3</text>
+
+<text x="52" y="395" fill="#2E8540" font-size="10" font-weight="bold">Deterministic • Auditable • 38 CFR §63</text>
+
+<rect x="410" y="185" width="350" height="230" fill="#FFFFFF" stroke="#2E8540" stroke-width="1"/>
+<rect x="410" y="185" width="350" height="30" fill="#2E8540"/>
+<text x="422" y="205" fill="#FFFFFF" font-size="12" font-weight="bold">AI MODE (constrained LLM)</text>
+<text x="422" y="235" fill="#112E51" font-size="13" font-weight="bold">→ HUD-VASH intake</text>
+<text x="422" y="255" fill="#112E51" font-size="13" font-weight="bold">→ SSVF referral</text>
+<text x="422" y="275" fill="#112E51" font-size="13" font-weight="bold">→ VA Health Care (Priority 3)</text>
+
+<text x="422" y="298" fill="#5B616B" font-size="10" font-weight="bold">Confidence:</text>
+<rect x="500" y="290" width="120" height="10" fill="#F1F1F1"/>
+<rect x="500" y="290" width="112" height="10" fill="#2E8540"/>
+<text x="628" y="298" fill="#2E8540" font-size="10" font-weight="bold">93%</text>
+
+<text x="422" y="320" fill="#112E51" font-size="10" font-weight="bold">Citations:</text>
+<text x="422" y="335" fill="#0071BC" font-size="10" text-decoration="underline">→ 38 CFR §63.4(a)(2) — eligibility</text>
+<text x="422" y="350" fill="#0071BC" font-size="10" text-decoration="underline">→ 38 CFR §17.36 — priority group</text>
+<text x="422" y="365" fill="#0071BC" font-size="10" text-decoration="underline">→ VHA Directive 1162.05</text>
+
+<text x="422" y="395" fill="#2E8540" font-size="10" font-weight="bold">✓ Matches rules result • Human review flagged if divergent</text>
+
+<rect x="40" y="425" width="720" height="30" fill="#FFF8E1" stroke="#FDB81E"/>
+<text x="52" y="445" fill="#112E51" font-size="11" font-weight="bold">⚠ AI never decides eligibility — it explains the decision. All routing goes through the rules engine.</text>
+
+</svg>

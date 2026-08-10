@@ -1,0 +1,13 @@
+.app-shell { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem 3rem; display: grid; gap: 1rem; }
+.hero-card, .panel, .tile { background: white; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08); }
+.eyebrow { text-transform: uppercase; font-weight: 700; letter-spacing: 0.2em; color: #2563eb; }
+.tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.tabs button { background: #e2e8f0; color: #0f172a; }
+.tabs button.active { background: #2563eb; color: white; }
+.panel-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.stack-list { display: grid; gap: 0.6rem; padding-left: 1.1rem; }
+.tile { border-left: 0.5rem solid #94a3b8; }
+.tile.green { border-left-color: #22c55e; }
+.tile.gold { border-left-color: #f59e0b; }
+.tile.red { border-left-color: #ef4444; }
+.email-card { padding: 1rem; border-radius: 0.75rem; background: #f8fafc; margin-top: 0.75rem; }

@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 445" width="800" height="445" font-family="Arial, sans-serif">
+<rect width="800" height="445" fill="#FFFFFF"/>
+<rect x="0" y="0" width="800" height="32" fill="#5C2E91"/>
+<text x="16" y="21" fill="#FFFFFF" font-size="14" font-weight="bold">Vendor Rigor Console — Scene 1: Cross-Check PR Board</text>
+
+<text x="30" y="65" fill="#112E51" font-size="18" font-weight="bold">Cross-Check PR Board — Patient Portal Contract</text>
+<text x="30" y="85" fill="#5B616B" font-size="12">Every PR requires a strong engineer from another team to review before merge (Aug–Sep policy)</text>
+
+<rect x="30" y="105" width="740" height="30" fill="#112E51"/>
+<text x="42" y="125" fill="#FFFFFF" font-size="11" font-weight="bold">PR</text>
+<text x="150" y="125" fill="#FFFFFF" font-size="11" font-weight="bold">AUTHOR</text>
+<text x="270" y="125" fill="#FFFFFF" font-size="11" font-weight="bold">CROSS-REVIEWER (other team)</text>
+<text x="490" y="125" fill="#FFFFFF" font-size="11" font-weight="bold">DESCRIPTION QUALITY</text>
+<text x="640" y="125" fill="#FFFFFF" font-size="11" font-weight="bold">STATE</text>
+
+<rect x="30" y="135" width="740" height="32" fill="#FFFFFF" stroke="#5B616B"/>
+<text x="42" y="156" fill="#0071BC" font-size="11">#4821 secure-msg</text>
+<text x="150" y="156" fill="#112E51" font-size="11">A. Chen (SM team)</text>
+<text x="270" y="156" fill="#112E51" font-size="11">M. Patel (Medications) ✓</text>
+<circle cx="510" cy="151" r="6" fill="#2E8540"/>
+<text x="525" y="156" fill="#2E8540" font-size="10" font-weight="bold">Human-verified</text>
+<rect x="640" y="142" width="115" height="20" fill="#2E8540"/>
+<text x="660" y="157" fill="#FFFFFF" font-size="10" font-weight="bold">MERGED ✓</text>
+
+<rect x="30" y="167" width="740" height="32" fill="#FFFFFF" stroke="#5B616B"/>
+<text x="42" y="188" fill="#0071BC" font-size="11">#4822 med-refill fix</text>
+<text x="150" y="188" fill="#112E51" font-size="11">R. Silva (Meds)</text>
+<text x="270" y="188" fill="#112E51" font-size="11">J. Kim (Health Tools) ✓</text>
+<circle cx="510" cy="183" r="6" fill="#2E8540"/>
+<text x="525" y="188" fill="#2E8540" font-size="10" font-weight="bold">Human-verified</text>
+<rect x="640" y="174" width="115" height="20" fill="#FDB81E"/>
+<text x="655" y="189" fill="#FFFFFF" font-size="10" font-weight="bold">IN REVIEW</text>
+
+<rect x="30" y="199" width="740" height="32" fill="#FFF0F0" stroke="#B50909"/>
+<text x="42" y="220" fill="#0071BC" font-size="11">#4823 platform util</text>
+<text x="150" y="220" fill="#112E51" font-size="11">K. Nguyen (Platform)</text>
+<text x="270" y="220" fill="#B50909" font-size="11" font-weight="bold">— none assigned —</text>
+<circle cx="510" cy="215" r="6" fill="#B50909"/>
+<text x="525" y="220" fill="#B50909" font-size="10" font-weight="bold">Missing verify steps</text>
+<rect x="640" y="206" width="115" height="20" fill="#B50909"/>
+<text x="660" y="221" fill="#FFFFFF" font-size="10" font-weight="bold">BLOCKED</text>
+
+<rect x="30" y="231" width="740" height="32" fill="#FFFFFF" stroke="#5B616B"/>
+<text x="42" y="252" fill="#0071BC" font-size="11">#4824 dashboard</text>
+<text x="150" y="252" fill="#112E51" font-size="11">L. Fernandez (MR)</text>
+<text x="270" y="252" fill="#112E51" font-size="11">A. Chen (SM) ✓ → Adrian (opt.)</text>
+<circle cx="510" cy="247" r="6" fill="#2E8540"/>
+<text x="525" y="252" fill="#2E8540" font-size="10" font-weight="bold">Human-verified</text>
+<rect x="640" y="238" width="115" height="20" fill="#0071BC"/>
+<text x="647" y="253" fill="#FFFFFF" font-size="10" font-weight="bold">TERTIARY ✓</text>
+
+<text x="30" y="295" fill="#112E51" font-size="13" font-weight="bold">This Week's Reviewer Rotation</text>
+<rect x="30" y="305" width="170" height="90" fill="#FFFFFF" stroke="#5B616B"/>
+<text x="42" y="322" fill="#112E51" font-size="11" font-weight="bold">Secure Messaging</text>
+<text x="42" y="340" fill="#5B616B" font-size="10">Primary: A. Chen</text>
+<text x="42" y="356" fill="#5B616B" font-size="10">Backup: T. Rao</text>
+<text x="42" y="378" fill="#2E8540" font-size="10" font-weight="bold">3 reviews this week</text>
+
+<rect x="210" y="305" width="170" height="90" fill="#FFFFFF" stroke="#5B616B"/>
+<text x="222" y="322" fill="#112E51" font-size="11" font-weight="bold">Medications</text>
+<text x="222" y="340" fill="#5B616B" font-size="10">Primary: R. Silva</text>
+<text x="222" y="356" fill="#5B616B" font-size="10">Backup: M. Patel</text>
+<text x="222" y="378" fill="#2E8540" font-size="10" font-weight="bold">4 reviews this week</text>
+
+<rect x="390" y="305" width="170" height="90" fill="#FFFFFF" stroke="#5B616B"/>
+<text x="402" y="322" fill="#112E51" font-size="11" font-weight="bold">Medical Records</text>
+<text x="402" y="340" fill="#5B616B" font-size="10">Primary: L. Fernandez</text>
+<text x="402" y="356" fill="#5B616B" font-size="10">Backup: D. Ochoa</text>
+<text x="402" y="378" fill="#2E8540" font-size="10" font-weight="bold">2 reviews this week</text>
+
+<rect x="570" y="305" width="200" height="90" fill="#FFFFFF" stroke="#5C2E91" stroke-width="2"/>
+<text x="582" y="322" fill="#5C2E91" font-size="11" font-weight="bold">Tertiary (on request)</text>
+<text x="582" y="340" fill="#5B616B" font-size="10">Adrian, Steve</text>
+<text x="582" y="356" fill="#5B616B" font-size="10">Only AFTER team review</text>
+<text x="582" y="378" fill="#5C2E91" font-size="10" font-weight="bold">1 request this week</text>
+
+<text x="30" y="425" fill="#5B616B" font-size="10">Bot enforces: no merge without cross-team reviewer approval • PR template requires "Intended Effect" and "Verification Steps"</text>
+
+</svg>

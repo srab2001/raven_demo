@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 445" width="800" height="445" font-family="Arial, sans-serif">
+<rect width="800" height="445" fill="#FFFFFF"/>
+<rect x="0" y="0" width="800" height="32" fill="#5C2E91"/>
+<text x="16" y="21" fill="#FFFFFF" font-size="14" font-weight="bold">Vendor Rigor Console — Scene 3: Ship Checklist Gate</text>
+
+<text x="30" y="65" fill="#112E51" font-size="18" font-weight="bold">Ship Checklist — Secure Messaging v2.14 release</text>
+<text x="30" y="85" fill="#5B616B" font-size="12">All gates must be green before "Ship" button unlocks • Target release: 07 Aug 14:00 ET</text>
+
+<rect x="30" y="105" width="740" height="55" fill="#FFFFFF" stroke="#2E8540" stroke-width="2"/>
+<circle cx="55" cy="132" r="12" fill="#2E8540"/>
+<text x="49" y="137" fill="#FFFFFF" font-size="14" font-weight="bold">✓</text>
+<text x="80" y="126" fill="#112E51" font-size="12" font-weight="bold">1. Staging validation</text>
+<text x="80" y="145" fill="#5B616B" font-size="10">Full regression pass in staging (127/127 tests green) • Manual smoke by QA — S. Ivanov @ 12:40 ET</text>
+<text x="640" y="137" fill="#2E8540" font-size="10" font-weight="bold">PASSED</text>
+
+<rect x="30" y="167" width="740" height="55" fill="#FFFFFF" stroke="#2E8540" stroke-width="2"/>
+<circle cx="55" cy="194" r="12" fill="#2E8540"/>
+<text x="49" y="199" fill="#FFFFFF" font-size="14" font-weight="bold">✓</text>
+<text x="80" y="188" fill="#112E51" font-size="12" font-weight="bold">2. Product guide updated (a11y call-out required)</text>
+<text x="80" y="207" fill="#5B616B" font-size="10">Product guide diff reviewed • Screen-reader impact section: "New attachment flow adds aria-live announcement"</text>
+<text x="640" y="199" fill="#2E8540" font-size="10" font-weight="bold">PUBLISHED</text>
+
+<rect x="30" y="229" width="740" height="55" fill="#FFFFFF" stroke="#2E8540" stroke-width="2"/>
+<circle cx="55" cy="256" r="12" fill="#2E8540"/>
+<text x="49" y="261" fill="#FFFFFF" font-size="14" font-weight="bold">✓</text>
+<text x="80" y="250" fill="#112E51" font-size="12" font-weight="bold">3. OCC notification sent (preferred email + help desk protocol)</text>
+<text x="80" y="269" fill="#5B616B" font-size="10">Sent to occ-notifications@va.gov &amp; help desk ticket #HD-8821 filed at 11:15 ET • Ack received</text>
+<text x="640" y="261" fill="#2E8540" font-size="10" font-weight="bold">ACKED</text>
+
+<rect x="30" y="291" width="740" height="55" fill="#FFFFFF" stroke="#FDB81E" stroke-width="2"/>
+<circle cx="55" cy="318" r="12" fill="#FDB81E"/>
+<text x="52" y="324" fill="#FFFFFF" font-size="14" font-weight="bold">⏳</text>
+<text x="80" y="312" fill="#112E51" font-size="12" font-weight="bold">4. Post-release validation plan (dashboards + analytics + trusted users)</text>
+<text x="80" y="331" fill="#5B616B" font-size="10">Dashboards subscribed • Analytics event verification queued • 3 trusted Veteran users on standby (T+30/60/120 min)</text>
+<text x="620" y="323" fill="#FDB81E" font-size="10" font-weight="bold">ARMED (post-ship)</text>
+
+<rect x="30" y="360" width="500" height="60" fill="#F0FAF3" stroke="#2E8540" stroke-width="2"/>
+<text x="42" y="382" fill="#2E8540" font-size="13" font-weight="bold">✓ All pre-ship gates green</text>
+<text x="42" y="402" fill="#5B616B" font-size="11">Ship signed off by: R. Silva (author) + M. Patel (cross-review) + PM approval</text>
+
+<rect x="560" y="365" width="210" height="52" fill="#2E8540"/>
+<text x="605" y="398" fill="#FFFFFF" font-size="18" font-weight="bold">▶ SHIP v2.14</text>
+
+</svg>

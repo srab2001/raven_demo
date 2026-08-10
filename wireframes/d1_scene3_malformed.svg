@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 470" width="800" height="470" font-family="Arial, sans-serif">
+<rect width="800" height="470" fill="#FFFFFF"/>
+<rect x="0" y="0" width="800" height="32" fill="#112E51"/>
+<text x="16" y="21" fill="#FFFFFF" font-size="14" font-weight="bold">RAVEN Demo — Scene 3: Malformed FHIR</text>
+<rect x="20" y="50" width="760" height="400" fill="#F1F1F1" stroke="#5B616B" stroke-width="1"/>
+<rect x="20" y="50" width="760" height="24" fill="#E1E1E1"/>
+<circle cx="30" cy="62" r="4" fill="#FF5F57"/>
+<circle cx="44" cy="62" r="4" fill="#FEBC2E"/>
+<circle cx="58" cy="62" r="4" fill="#28C840"/>
+<rect x="76" y="56" width="688" height="14" fill="#FFFFFF" rx="2"/>
+<text x="84" y="66" fill="#5B616B" font-size="10">eligibility-demo.va.gov/lookup</text>
+<text x="40" y="100" fill="#112E51" font-size="18" font-weight="bold">Malformed FHIR Response</text>
+
+<rect x="40" y="130" width="340" height="280" fill="#FFFFFF" stroke="#B50909" stroke-width="2"/>
+<rect x="40" y="130" width="340" height="30" fill="#B50909"/>
+<text x="52" y="150" fill="#FFFFFF" font-size="13" font-weight="bold">⚠ Eligibility Not Confirmed</text>
+
+<text x="52" y="185" fill="#112E51" font-size="12">We could not confirm eligibility</text>
+<text x="52" y="203" fill="#112E51" font-size="12">right now. This is a system issue,</text>
+<text x="52" y="221" fill="#112E51" font-size="12">not a problem with the Veteran's</text>
+<text x="52" y="239" fill="#112E51" font-size="12">record.</text>
+
+<text x="52" y="275" fill="#5B616B" font-size="11">Reference number:</text>
+<text x="52" y="293" fill="#112E51" font-size="14" font-weight="bold" font-family="monospace">#A47C-2201</text>
+
+<rect x="52" y="315" width="140" height="30" fill="#0071BC"/>
+<text x="70" y="335" fill="#FFFFFF" font-size="12" font-weight="bold">Try Again</text>
+
+<rect x="200" y="315" width="140" height="30" fill="#FFFFFF" stroke="#0071BC" stroke-width="1"/>
+<text x="218" y="335" fill="#0071BC" font-size="12" font-weight="bold">Contact Help Desk</text>
+
+<text x="52" y="380" fill="#5B616B" font-size="10">No PII shown • No fabricated data • Auditable</text>
+
+<text x="410" y="150" fill="#112E51" font-size="12" font-weight="bold">RAW PAYLOAD (evaluator view)</text>
+<rect x="410" y="160" width="350" height="250" fill="#0F1419"/>
+<text x="422" y="180" fill="#4EC9B0" font-size="10" font-family="monospace">{</text>
+<text x="432" y="196" fill="#9CDCFE" font-size="10" font-family="monospace">"resourceType": </text>
+<text x="540" y="196" fill="#FF6B6B" font-size="10" font-family="monospace">null,  ← missing</text>
+<text x="432" y="212" fill="#9CDCFE" font-size="10" font-family="monospace">"identifier": [</text>
+<text x="442" y="228" fill="#4EC9B0" font-size="10" font-family="monospace">{ "value": </text>
+<text x="520" y="228" fill="#FDB81E" font-size="10" font-family="monospace">"" ← empty</text>
+<text x="442" y="244" fill="#4EC9B0" font-size="10" font-family="monospace">}</text>
+<text x="432" y="260" fill="#9CDCFE" font-size="10" font-family="monospace">],</text>
+<text x="432" y="276" fill="#9CDCFE" font-size="10" font-family="monospace">"gender": </text>
+<text x="500" y="276" fill="#FF6B6B" font-size="10" font-family="monospace">"unknown_x"  ← invalid</text>
+<text x="422" y="292" fill="#4EC9B0" font-size="10" font-family="monospace">}</text>
+<text x="422" y="320" fill="#FDB81E" font-size="10" font-family="monospace">FHIR R4 validator: FAIL</text>
+<text x="422" y="336" fill="#FDB81E" font-size="10" font-family="monospace">→ 3 schema violations</text>
+<text x="422" y="352" fill="#4EC9B0" font-size="10" font-family="monospace">→ Fail-safe UI rendered</text>
+<text x="422" y="376" fill="#5B616B" font-size="10" font-family="monospace">Logged to Datadog: err_id A47C-2201</text>
+
+<circle cx="740" cy="70" r="8" fill="#B50909"/>
+<text x="695" y="90" fill="#B50909" font-size="10" font-weight="bold">CHAOS: SCHEMA</text>
+
+</svg>

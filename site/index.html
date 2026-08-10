@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="RAVEN/SQUARES demonstration prototypes" />
+    <title>RAVEN/SQUARES Demos</title>
+    <style>
+      :root { color: #13233f; background: #eef3f8; font-family: Georgia, 'Times New Roman', serif; }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-height: 100vh; }
+      main { max-width: 960px; margin: 0 auto; padding: 72px 24px; }
+      .label { color: #0071bc; font-family: Arial, sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+      h1 { font-size: clamp(2.25rem, 6vw, 4.5rem); font-weight: 500; line-height: 1; margin: 12px 0 20px; }
+      .intro { font-size: 1.2rem; line-height: 1.55; max-width: 58ch; }
+      nav { display: grid; gap: 12px; margin-top: 40px; }
+      a { background: white; border: 1px solid #bfd1df; color: #13233f; display: block; padding: 20px; text-decoration: none; }
+      a:hover, a:focus-visible { border-color: #0071bc; outline: 3px solid #cbe8ff; outline-offset: 2px; }
+      strong, span { display: block; }
+      strong { font-family: Arial, sans-serif; font-size: 1.05rem; margin-bottom: 6px; }
+      span { color: #475569; line-height: 1.45; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="label">RAVEN/SQUARES</p>
+      <h1>Demonstration Prototypes</h1>
+      <p class="intro">Three focused product demos for resilience, accessible eligibility decisions, and operational rigor.</p>
+      <nav aria-label="Demo applications">
+        <a href="/demo1/"><strong>Lighthouse Under Load</strong><span>Explore eligibility lookups, latency, and visible failure modes.</span></a>
+        <a href="/demo2/"><strong>508-First Eligibility Wizard</strong><span>Walk through an accessible, plain-language eligibility flow.</span></a>
+        <a href="/demo3/"><strong>Vendor Rigor Console</strong><span>Review release gates, attestation, and governance controls.</span></a>
+      </nav>
+    </main>
+  </body>
+</html>

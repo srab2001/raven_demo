@@ -1,0 +1,17 @@
+.app-shell { max-width: 980px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid; gap: 1rem; }
+.hero-card, .wizard-card, .result-card { background: white; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08); }
+.eyebrow { text-transform: uppercase; letter-spacing: 0.2em; color: #2563eb; font-weight: 700; }
+.progress { height: 0.7rem; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin-top: 1rem; }
+.progress-bar { height: 100%; background: linear-gradient(90deg, #2563eb, #22c55e); }
+.wizard-card { display: grid; gap: 1rem; }
+form { display: grid; gap: 0.75rem; }
+fieldset { border: 1px solid #cbd5e1; border-radius: 0.75rem; padding: 1rem; }
+label { display: grid; gap: 0.25rem; font-weight: 600; }
+input, select { padding: 0.75rem; border-radius: 0.6rem; border: 1px solid #94a3b8; }
+.actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.5rem; }
+button { border: none; border-radius: 999px; padding: 0.7rem 1rem; background: #2563eb; color: white; cursor: pointer; }
+button[type='button'] { background: #334155; }
+.alert { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; padding: 0.8rem 1rem; border-radius: 0.75rem; }
+.resume-banner { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 0.9rem; margin-top: 0.8rem; display: grid; gap: 0.6rem; }
+.results-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 1rem; }
+.result-card { border: 1px solid #e2e8f0; }

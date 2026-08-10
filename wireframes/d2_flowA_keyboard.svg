@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 470" width="800" height="470" font-family="Arial, sans-serif">
+<rect width="800" height="470" fill="#FFFFFF"/>
+<rect x="0" y="0" width="800" height="32" fill="#112E51"/>
+<text x="16" y="21" fill="#FFFFFF" font-size="14" font-weight="bold">RAVEN Demo — Flow A: Keyboard-Only Veteran</text>
+<rect x="20" y="50" width="760" height="400" fill="#F1F1F1" stroke="#5B616B" stroke-width="1"/>
+<rect x="20" y="50" width="760" height="24" fill="#E1E1E1"/>
+<circle cx="30" cy="62" r="4" fill="#FF5F57"/>
+<circle cx="44" cy="62" r="4" fill="#FEBC2E"/>
+<circle cx="58" cy="62" r="4" fill="#28C840"/>
+<rect x="76" y="56" width="688" height="14" fill="#FFFFFF" rx="2"/>
+<text x="84" y="66" fill="#5B616B" font-size="10">eligibility-wizard.va.gov/step-2</text>
+<text x="40" y="105" fill="#5B616B" font-size="11">Step 2 of 3</text>
+<rect x="40" y="115" width="200" height="6" fill="#2E8540"/>
+<rect x="240" y="115" width="100" height="6" fill="#F1F1F1"/>
+
+<text x="40" y="155" fill="#112E51" font-size="20" font-weight="bold">Where are you staying tonight?</text>
+<text x="40" y="180" fill="#5B616B" font-size="12">This helps us match you to the right housing benefit.</text>
+
+<rect x="40" y="205" width="500" height="42" fill="#FFFFFF" stroke="#0071BC" stroke-width="3"/>
+<circle cx="60" cy="226" r="8" fill="#FFFFFF" stroke="#112E51" stroke-width="2"/>
+<circle cx="60" cy="226" r="4" fill="#112E51"/>
+<text x="80" y="231" fill="#112E51" font-size="14">In my own home or apartment</text>
+<text x="490" y="220" fill="#0071BC" font-size="9" font-weight="bold">FOCUSED</text>
+<text x="490" y="234" fill="#0071BC" font-size="9">(Tab-reachable)</text>
+
+<rect x="40" y="255" width="500" height="42" fill="#FFFFFF" stroke="#5B616B"/>
+<circle cx="60" cy="276" r="8" fill="#FFFFFF" stroke="#5B616B" stroke-width="2"/>
+<text x="80" y="281" fill="#112E51" font-size="14">With family or friends temporarily</text>
+
+<rect x="40" y="305" width="500" height="42" fill="#FFFFFF" stroke="#5B616B"/>
+<circle cx="60" cy="326" r="8" fill="#FFFFFF" stroke="#5B616B" stroke-width="2"/>
+<text x="80" y="331" fill="#112E51" font-size="14">In a shelter, vehicle, or outside</text>
+
+<rect x="40" y="360" width="120" height="40" fill="#0071BC"/>
+<text x="76" y="385" fill="#FFFFFF" font-size="14" font-weight="bold">Continue</text>
+<rect x="170" y="360" width="80" height="40" fill="#FFFFFF" stroke="#0071BC"/>
+<text x="197" y="385" fill="#0071BC" font-size="14" font-weight="bold">Back</text>
+
+<rect x="580" y="140" width="180" height="270" fill="#F8F9FA" stroke="#5B616B"/>
+<text x="590" y="160" fill="#112E51" font-size="11" font-weight="bold">A11Y LIVE PANEL</text>
+<text x="590" y="180" fill="#2E8540" font-size="10">✓ axe-core: 0 violations</text>
+<text x="590" y="196" fill="#2E8540" font-size="10">✓ Lighthouse: 100</text>
+<text x="590" y="212" fill="#2E8540" font-size="10">✓ Contrast: 8.2:1</text>
+<text x="590" y="228" fill="#2E8540" font-size="10">✓ Focus ring visible</text>
+<text x="590" y="244" fill="#2E8540" font-size="10">✓ Skip-to-content</text>
+<text x="590" y="260" fill="#2E8540" font-size="10">✓ aria-live regions</text>
+<text x="590" y="276" fill="#2E8540" font-size="10">✓ Zoom 400% OK</text>
+<text x="590" y="292" fill="#2E8540" font-size="10">✓ Tab order correct</text>
+<text x="590" y="315" fill="#112E51" font-size="10" font-weight="bold">Keyboard trace:</text>
+<text x="590" y="330" fill="#5B616B" font-size="9" font-family="monospace">Tab → Skip link</text>
+<text x="590" y="344" fill="#5B616B" font-size="9" font-family="monospace">Tab → Radio 1</text>
+<text x="590" y="358" fill="#5B616B" font-size="9" font-family="monospace">↓ → Radio 2</text>
+<text x="590" y="372" fill="#5B616B" font-size="9" font-family="monospace">↓ → Radio 3</text>
+<text x="590" y="386" fill="#5B616B" font-size="9" font-family="monospace">Tab → Continue</text>
+
+<text x="40" y="430" fill="#5B616B" font-size="9">Built with va-radio, va-button, va-alert from design.va.gov/storybook • Mouse disabled for this run</text>
+
+</svg>

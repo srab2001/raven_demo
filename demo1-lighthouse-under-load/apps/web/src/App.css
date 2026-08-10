@@ -1,0 +1,17 @@
+.app-shell { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem 3rem; display: grid; gap: 1rem; }
+.hero-card, .panel { background: white; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08); }
+.eyebrow { text-transform: uppercase; font-weight: 700; letter-spacing: 0.2em; color: #2563eb; }
+.panel-grid { display: grid; gap: 1rem; grid-template-columns: 2fr 1fr; }
+form { display: grid; gap: 0.75rem; }
+input, button { font: inherit; }
+input { padding: 0.7rem; border: 1px solid #cbd5e1; border-radius: 0.6rem; }
+button { border: none; border-radius: 999px; padding: 0.75rem 1rem; background: #2563eb; color: white; cursor: pointer; }
+button.active { background: #0f172a; }
+.controls { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.result-card { margin-top: 1rem; padding: 1rem; border-radius: 0.75rem; background: #f8fafc; }
+.bars { display: grid; gap: 0.6rem; margin-top: 1rem; }
+.bar-row { display: grid; grid-template-columns: 100px 1fr 60px; align-items: center; gap: 0.75rem; }
+.bar-track { height: 0.7rem; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+.bar-fill { height: 100%; background: linear-gradient(90deg, #22c55e, #2563eb); }
+.log-list { padding-left: 1.1rem; display: grid; gap: 0.4rem; }
+@media (max-width: 800px) { .panel-grid { grid-template-columns: 1fr; } .bar-row { grid-template-columns: 1fr; } }
