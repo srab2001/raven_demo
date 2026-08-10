@@ -21,7 +21,7 @@ export default function ChaosToggle({ value, onChange }: { value: ChaosMode; onC
       <h2>Chaos controls</h2>
       <div className="controls" role="group" aria-label="Chaos scenario">
         {SCENARIOS.map((scenario) => (
-          <Tooltip key={scenario.value} label={scenario.hint}>
+          <Tooltip key={scenario.value} id={`demo1.tooltip.${scenario.value}`} label={scenario.hint}>
             <button
               type="button"
               className={value === scenario.value ? 'active' : ''}

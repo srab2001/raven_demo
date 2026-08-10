@@ -84,10 +84,10 @@ export default function Step4_Separation() {
 
       <div className="a11y-sidebar">
         <ReadingLevelMeter text={visibleText} />
-        <Callout>A real Flesch-Kincaid score computed on the visible text of this step — this demo enforces an 8th-grade reading level, not just claims one.</Callout>
+        <Callout id="demo2.callout.readinglevel">A real Flesch-Kincaid score computed on the visible text of this step — this demo enforces an 8th-grade reading level, not just claims one.</Callout>
         <PlainLanguageChecklist />
         <NvdaSimulator />
-        <Callout>Turn this on, then press Tab through the form above — it announces each control using NVDA's actual phrasing conventions ("Edit, Month, 03", "Alert: Saved automatically").</Callout>
+        <Callout id="demo2.callout.nvda">Turn this on, then press Tab through the form above — it announces each control using NVDA's actual phrasing conventions ("Edit, Month, 03", "Alert: Saved automatically").</Callout>
       </div>
     </div>
   )

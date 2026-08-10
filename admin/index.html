@@ -33,6 +33,15 @@
       #status { margin-top: 0.75rem; font-size: 0.85rem; }
       .status-error { color: #b91c1c; }
       .status-ok { color: #166534; }
+      .content-group { margin-bottom: 1.25rem; }
+      .content-group h3 { font-size: 0.95rem; margin: 0 0 0.5rem; color: #334155; }
+      .content-item { border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 0.9rem; margin-bottom: 0.75rem; }
+      .content-item-label { font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+      .content-item textarea { width: 100%; min-height: 4.5rem; margin-top: 0.5rem; padding: 0.6rem; border-radius: 0.5rem; border: 1px solid #94a3b8; font: inherit; resize: vertical; }
+      .content-item-meta { font-size: 0.78rem; color: #64748b; margin-top: 0.35rem; }
+      .content-item-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
+      .badge-override { background: #dbeafe; color: #1e40af; padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.7rem; font-weight: 700; }
+      .content-item-status { font-size: 0.78rem; margin-top: 0.35rem; min-height: 1em; }
     </style>
   </head>
   <body>
@@ -59,6 +68,12 @@
           </thead>
           <tbody id="users-body"></tbody>
         </table>
+      </section>
+
+      <section class="card">
+        <h2>Edit demo copy</h2>
+        <p>Edit the speech-bubble callouts and hover tooltips shown across the three demos. Changes apply immediately — no code deploy needed.</p>
+        <div id="content-groups"></div>
       </section>
     </main>
 
@@ -154,8 +169,102 @@
         loadUsers()
       })
 
+      function escapeHtml(value) {
+        var div = document.createElement('div')
+        div.textContent = value
+        return div.innerHTML
+      }
+
+      async function loadContent() {
+        var response = await fetch('/api/admin/content')
+        if (!response.ok) {
+          setStatus('Could not load demo copy — are you an approved admin?', false)
+          return
+        }
+        var data = await response.json()
+        var groupsEl = document.getElementById('content-groups')
+        groupsEl.innerHTML = ''
+
+        var byDemo = {}
+        data.items.forEach(function (item) {
+          if (!byDemo[item.demo]) byDemo[item.demo] = []
+          byDemo[item.demo].push(item)
+        })
+
+        Object.keys(byDemo).sort().forEach(function (demo) {
+          var group = document.createElement('div')
+          group.className = 'content-group'
+          group.innerHTML = '<h3>' + escapeHtml(demo) + '</h3>'
+
+          byDemo[demo].forEach(function (item) {
+            var row = document.createElement('div')
+            row.className = 'content-item'
+            row.dataset.key = item.key
+            row.innerHTML =
+              '<div class="content-item-label">' + escapeHtml(item.label) +
+              (item.isOverridden ? ' <span class="badge-override">edited</span>' : '') + '</div>' +
+              '<textarea>' + escapeHtml(item.currentText) + '</textarea>' +
+              '<div class="content-item-meta">' + (item.isOverridden ? 'Last edited ' + formatDate(item.updatedAt) + (item.updatedBy ? ' by ' + escapeHtml(item.updatedBy) : '') : 'Using default text') + '</div>' +
+              '<div class="content-item-actions">' +
+              '<button data-action="save-content">Save</button>' +
+              '<button class="ghost" data-action="reset-content">Reset to default</button>' +
+              '</div>' +
+              '<p class="content-item-status"></p>'
+            row.querySelector('textarea').dataset.default = item.default
+            group.appendChild(row)
+          })
+
+          groupsEl.appendChild(group)
+        })
+      }
+
+      document.getElementById('content-groups').addEventListener('click', async function (event) {
+        var button = event.target.closest('button[data-action]')
+        if (!button) return
+        var row = button.closest('.content-item')
+        var key = row.dataset.key
+        var statusText = row.querySelector('.content-item-status')
+        var action = button.getAttribute('data-action')
+
+        if (action === 'save-content') {
+          var text = row.querySelector('textarea').value
+          var response = await fetch('/api/admin/content', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key: key, text: text }),
+          })
+          var data = await response.json()
+          if (!response.ok) {
+            statusText.textContent = data.error || 'Save failed'
+            statusText.className = 'content-item-status status-error'
+            return
+          }
+          statusText.textContent = 'Saved'
+          statusText.className = 'content-item-status status-ok'
+          loadContent()
+        }
+
+        if (action === 'reset-content') {
+          var response = await fetch('/api/admin/content', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key: key }),
+          })
+          var data = await response.json()
+          if (!response.ok) {
+            statusText.textContent = data.error || 'Reset failed'
+            statusText.className = 'content-item-status status-error'
+            return
+          }
+          statusText.textContent = 'Reset to default'
+          statusText.className = 'content-item-status status-ok'
+          loadContent()
+        }
+      })
+
       loadWhoAmI()
       loadUsers()
+      loadContent()
     </script>
   </body>
 </html>

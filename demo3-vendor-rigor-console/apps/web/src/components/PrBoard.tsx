@@ -79,7 +79,7 @@ export default function PrBoard() {
           </ul>
         )}
         <p className="footnote">Bot enforces: no merge without cross-team reviewer approval • PR template requires "Intended Effect" and "Verification Steps"</p>
-        <Callout>#4823 is BLOCKED because no cross-team reviewer is assigned. Click "Assign cross-reviewer" to see the enforcement bot act, not just describe the rule.</Callout>
+        <Callout id="demo3.callout.prboard">#4823 is BLOCKED because no cross-team reviewer is assigned. Click "Assign cross-reviewer" to see the enforcement bot act, not just describe the rule.</Callout>
       </article>
 
       <article className="panel">
