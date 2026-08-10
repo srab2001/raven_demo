@@ -44,6 +44,16 @@ export async function ensureSchema() {
       updated_by TEXT
     )
   `
+  await sql`
+    CREATE TABLE IF NOT EXISTS pr_board_entries (
+      id SERIAL PRIMARY KEY,
+      title TEXT NOT NULL,
+      author_name TEXT NOT NULL,
+      author_team TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      created_by TEXT
+    )
+  `
   schemaReady = true
 }
 
