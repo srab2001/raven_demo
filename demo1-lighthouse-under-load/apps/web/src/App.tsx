@@ -31,6 +31,7 @@ function App() {
   const [latencyBars, setLatencyBars] = useState<LatencyBar[]>(ENDPOINTS.map((label) => ({ label, ms: 0 })))
   const [endpointStats, setEndpointStats] = useState<EndpointStat[]>(ENDPOINTS.map((label) => ({ label, state: 'closed', p50: 0, p99: 0 })))
   const [queue, setQueue] = useState<QueueItem[]>([])
+  const [lookupLoading, setLookupLoading] = useState(false)
 
   const breakersRef = useRef<Record<Endpoint, CircuitBreaker>>({
     'Patient/v0': new CircuitBreaker(),
@@ -105,6 +106,15 @@ function App() {
       return
     }
 
+    setLookupLoading(true)
+    try {
+      await performLookup()
+    } finally {
+      setLookupLoading(false)
+    }
+  }
+
+  const performLookup = async () => {
     addLog(`Lookup submitted for ${icn} (${chaos})`, 'info')
 
     const patient = await callWithReauth('Patient/v0', chaos)
@@ -225,7 +235,13 @@ function App() {
 
       <section className="panel-grid">
         <section className="panel-stack">
-          <EligibilityLookup icn={icn} onIcnChange={setIcn} onSubmit={runLookup} disabledReason={chaos === 'ratelimit' ? 'Rate-limit chaos routes lookups through the bulk queue below.' : undefined} />
+          <EligibilityLookup
+            icn={icn}
+            onIcnChange={setIcn}
+            onSubmit={runLookup}
+            loading={lookupLoading}
+            disabledReason={chaos === 'ratelimit' ? 'Rate-limit chaos routes lookups through the bulk queue below.' : undefined}
+          />
           <ResultPanel view={resultView} />
           <LatencyWaterfall bars={latencyBars} />
           <EndpointHealth endpoints={endpointStats} />
