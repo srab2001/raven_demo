@@ -4,6 +4,7 @@ import { useWizardStore } from '../state/wizardStore'
 import ReadingLevelMeter from '../a11y/ReadingLevelMeter'
 import NvdaSimulator from '../a11y/NvdaSimulator'
 import PlainLanguageChecklist from '../a11y/PlainLanguageChecklist'
+import Callout from '../components/Callout'
 
 function splitIso(iso: string) {
   const [year, month, day] = (iso || '2021-01-01').split('-')
@@ -83,8 +84,10 @@ export default function Step4_Separation() {
 
       <div className="a11y-sidebar">
         <ReadingLevelMeter text={visibleText} />
+        <Callout>A real Flesch-Kincaid score computed on the visible text of this step — this demo enforces an 8th-grade reading level, not just claims one.</Callout>
         <PlainLanguageChecklist />
         <NvdaSimulator />
+        <Callout>Turn this on, then press Tab through the form above — it announces each control using NVDA's actual phrasing conventions ("Edit, Month, 03", "Alert: Saved automatically").</Callout>
       </div>
     </div>
   )

@@ -7,6 +7,8 @@ import Step4_Separation from './steps/Step4_Separation'
 import Result from './steps/Result'
 import AxePanel from './a11y/AxePanel'
 import ContrastMeter from './a11y/ContrastMeter'
+import Callout from './components/Callout'
+import CalloutToggle from './components/CalloutToggle'
 
 const STEP_COMPONENTS: Record<string, () => JSX.Element> = {
   discharge: Step1_Discharge,
@@ -34,16 +36,21 @@ function App() {
             <div className="progress-bar" style={{ width: `${progress}%` }} />
           </div>
           <p className="step-count">Step {currentStepIndex + 1} of {STEPS.length}</p>
+          <Callout>Each step asks exactly one question — this wizard is designed to be usable with a keyboard alone or a screen reader, not just visually.</Callout>
         </header>
 
         <div className="wizard-layout">
           <section className="wizard-card" id="wizard-main">
             <StepComponent />
           </section>
-          <AxePanel runKey={step} />
+          <div>
+            <AxePanel runKey={step} />
+            <Callout>This runs a real axe-core scan against the current page on every step — it's a live result, not a canned checklist.</Callout>
+          </div>
         </div>
       </main>
       <ContrastMeter />
+      <CalloutToggle />
     </>
   )
 }
