@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Sign in to RAVEN/SQUARES demos" />
+    <link rel="icon" href="data:," />
+    <title>Sign in — RAVEN/SQUARES Demos</title>
+    <style>
+      :root { color: #13233f; background: #eef3f8; font-family: Georgia, 'Times New Roman', serif; }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+      main { max-width: 420px; margin: 0 auto; padding: 48px 32px; background: white; border-radius: 1rem; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1); text-align: center; }
+      .label { color: #0071bc; font-family: Arial, sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+      h1 { font-size: 1.8rem; font-weight: 500; margin: 12px 0 20px; }
+      p { color: #475569; line-height: 1.5; }
+      a.button { display: inline-block; margin-top: 1.5rem; background: #0071bc; color: white; font-family: Arial, sans-serif; font-weight: 700; padding: 0.85rem 1.5rem; border-radius: 999px; text-decoration: none; }
+      a.button:hover, a.button:focus-visible { background: #005a94; outline: 3px solid #cbe8ff; outline-offset: 2px; }
+      .error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; border-radius: 0.75rem; padding: 0.75rem 1rem; margin-top: 1rem; font-family: Arial, sans-serif; font-size: 0.9rem; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="label">RAVEN/SQUARES</p>
+      <h1>Sign in to continue</h1>
+      <p>This demo package is limited to approved reviewers. Sign in with Google — an admin will need to approve your account before you can view the demos.</p>
+      <a class="button" id="google-signin" href="/api/auth/google/start">Sign in with Google</a>
+      <div id="error" class="error" hidden></div>
+    </main>
+    <script>
+      var params = new URLSearchParams(location.search)
+      var next = params.get('next')
+      var signin = document.getElementById('google-signin')
+      if (next) signin.href = '/api/auth/google/start?next=' + encodeURIComponent(next)
+
+      var errorMessages = {
+        state: 'That sign-in attempt expired or was invalid. Please try again.',
+        unverified: 'Your Google account email is not verified. Please verify it with Google and try again.',
+        server: 'Something went wrong signing you in. Please try again in a moment.',
+      }
+      var error = params.get('error')
+      if (error && errorMessages[error]) {
+        var box = document.getElementById('error')
+        box.hidden = false
+        box.textContent = errorMessages[error]
+      }
+    </script>
+  </body>
+</html>

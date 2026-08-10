@@ -8,6 +8,13 @@ This repository contains three interactive demo prototypes:
 - Demo 2: 508-First Eligibility Wizard — a keyboard-first, one-question-per-screen wizard with a live accessibility panel (real axe-core scan on every step), an NVDA-style screen-reader simulator, a live Flesch-Kincaid reading-level meter, and a rules-vs-AI decision comparison with citations. For evaluators: toggle "NVDA simulator" on and tab through the separation-date step; use "Show divergence example" on the result step to see the human-review escalation.
 - Demo 3: Vendor Rigor Console — a governance console with a cross-team PR review board, daily dashboard attestation, a ship-checklist release gate that blocks the Ship button until gates pass, and a government-email guardrail composer that blocks Send until a PDS Health contact is added or an override is logged.
 
+## Signing in
+
+Every page, including the three demos, requires Google sign-in and admin
+approval. First-time visitors land on `/pending` after signing in until an
+admin approves them at `/admin`. See [docs/ADMIN_AUTH.md](docs/ADMIN_AUTH.md)
+for the required environment variables and the full approval workflow.
+
 ## How to run locally
 
 1. Open a terminal in the repository root.

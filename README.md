@@ -12,6 +12,12 @@ or deviates from the original build brief — mainly: no backend proxy or real
 to hold a client secret), no CI pipeline, and no VA Design System component
 library dependency.
 
+## Access control
+
+All pages (including the demos) are gated behind Google sign-in and admin
+approval — see [docs/ADMIN_AUTH.md](docs/ADMIN_AUTH.md) for setup, the
+approval workflow, and the admin panel at `/admin`.
+
 ## Quick start
 
 Each demo is a separate Vite React + TypeScript app.
