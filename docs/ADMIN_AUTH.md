@@ -13,10 +13,14 @@ workflow, and known limitations.
 - `/api/auth/google/start` redirects to Google's OAuth consent screen.
   `/api/auth/google/callback` exchanges the code, verifies the ID token
   against Google's JWKS, upserts a row in the `users` table (Neon Postgres),
-  and — if the account is approved — signs a session JWT (`jose`, HS256) into
-  an httpOnly cookie.
-- `/api/admin/*` (users/approve/invite/revoke) requires an admin session and
-  operates on the `users` table.
+  and — if the account is approved — signs a session JWT into an httpOnly
+  cookie.
+- `lib/jwt.ts` implements the HS256 session signing/verification and the
+  RS256/JWK Google ID token verification using only the Web Crypto API
+  (`crypto.subtle`) — no third-party JWT library. See "Incident history"
+  below for why.
+- `/api/admin/*` (users/approve/invite/revoke, content) requires an admin
+  session and operates on the `users` / `content_overrides` tables.
 - `/login`, `/pending`, and `/admin` are plain static HTML pages (no build
   step) so they don't need their own Vite app.
 
@@ -86,6 +90,74 @@ environment bound to whatever branch was last connected rather than `main`.
 Check the deployment's "Branch" field in its function logs / deployment
 details if production behavior seems to lag or lead what you'd expect from
 `main`.
+
+## Incident history: the ESM/CommonJS crash saga
+
+Shortly after this feature first shipped, production started returning
+`FUNCTION_INVOCATION_FAILED` / `Cannot use import statement outside a
+module` on `/api/auth/google/start` and related routes — even though the
+Vercel build itself succeeded (`Ready`). This took several PRs to fully
+resolve and is worth understanding if a similar crash reappears:
+
+1. **First two crashes were ordinary unguarded throws**, not the ESM issue:
+   `lib/db.ts` threw at module-import time when `DATABASE_URL` was missing
+   (any function that imported it crashed before its own `try/catch` could
+   run), and `/api/auth/google/start` had no `try/catch` around
+   `buildGoogleAuthUrl()`, which throws if `GOOGLE_CLIENT_ID` is missing.
+   Both were fixed by lazy-initializing the DB client and wrapping every
+   handler body in `try/catch` (now also via `lib/apiErrors.ts`'s
+   `withErrorHandling`).
+2. **The real, harder bug:** after those fixes, the exact same
+   `Cannot use import statement outside a module` crash persisted on a
+   fresh, no-build-cache redeploy. The root cause was that `jose` (used for
+   JWT signing/verification) ships ESM-only, and Vercel's monorepo
+   Node-function bundling was not reliably propagating a `"type": "module"`
+   signal from the root `package.json` into the deployed function's actual
+   runtime context. Adding `"type": "module"` to `package.json` looked like
+   it should fix it and deployed cleanly, but the identical crash came back
+   on the very next fresh deployment — proving the field wasn't the fix.
+3. **The actual fix was to remove the dependency, not chase the config.**
+   `lib/jwt.ts` was rewritten from scratch using only the Web Crypto API
+   (`crypto.subtle`, `TextEncoder`/`TextDecoder`, `btoa`/`atob`) — no
+   third-party import, no Node-specific API. This matters for two reasons:
+   Web Crypto works identically under CommonJS or ESM compilation output,
+   and it also works in `middleware.ts`'s Edge Runtime, which has no
+   `node:crypto`. `tsconfig.json`'s `"module"` was set back to `CommonJS`
+   and `"type": "module"` was removed from `package.json`. The fix was
+   verified by compiling with `tsc` and inspecting the actual output
+   (`require()`/`exports`, zero `import`/`export`), and by unit-testing the
+   new sign/verify code directly (HS256 roundtrip, tampered/expired/wrong-
+   secret rejection, and the full Google ID token verification path against
+   a locally generated RSA keypair).
+
+**Takeaway:** a "Ready" Vercel build does not prove the deployed function
+runs — it only proves it built. If a serverless function throws
+`Cannot use import statement outside a module` and toggling
+`"type": "module"` doesn't durably fix it (i.e. it recurs on a fresh
+deploy), suspect an ESM-only dependency rather than the module config, and
+consider replacing it with a runtime-agnostic implementation instead of
+continuing to fight the bundler.
+
+## Editable demo copy (callouts and tooltips)
+
+The speech-bubble callouts and chaos-scenario hover tooltips shown across
+all three demos are editable from `/admin` without a code deploy:
+
+- `lib/contentManifest.ts` is the canonical list of every editable item
+  (`key`, which demo it belongs to, a human label, and its default text).
+- `content_overrides` (Neon Postgres) stores admin-saved overrides, keyed
+  by the same `key`.
+- `GET /api/content` is public and unauthenticated — it only returns
+  current override text (non-sensitive UI copy) for the demo pages, which
+  are themselves already gated by the middleware above.
+- `GET/POST/DELETE /api/admin/content` is admin-only (`requireAdmin`) and
+  backs the "Edit demo copy" section on `/admin`: list all items with their
+  current effective text, save a new override, or delete one to revert to
+  the hardcoded default.
+- Each demo wraps its app in a `ContentProvider` (React Context) that
+  fetches `/api/content` once on load; `Callout` and `Tooltip` components
+  look up their `id` in the returned overrides and fall back to their
+  hardcoded default text if no override exists.
 
 ## Known limitations
 

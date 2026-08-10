@@ -40,7 +40,7 @@ export default function Result() {
         <button type="button" className={mode === 'ai' ? 'active' : ''} aria-pressed={mode === 'ai'} onClick={() => setMode('ai')}>AI</button>
         <span className="engine-toggle-hint">(toggle to compare)</span>
       </div>
-      <Callout>Rules mode runs a deterministic decision table over your answers. AI mode explains the same result with citations — click "Show divergence example" below to see what happens when they disagree.</Callout>
+      <Callout id="demo2.callout.enginetoggle">Rules mode runs a deterministic decision table over your answers. AI mode explains the same result with citations — click "Show divergence example" below to see what happens when they disagree.</Callout>
 
       {diverges && (
         <div className="divergence-banner" role="alert">
@@ -88,7 +88,7 @@ export default function Result() {
         <button type="button" onClick={() => setShowDivergence((current) => !current)}>{showDivergence ? 'Show agreement example' : 'Show divergence example'}</button>
         <button type="button" onClick={handleDownloadVpat} disabled={downloading}>{downloading ? 'Generating…' : 'Download VPAT'}</button>
       </div>
-      <Callout>Downloads a real accessibility conformance snapshot generated from an axe-core scan of this page right now — not a static template.</Callout>
+      <Callout id="demo2.callout.vpat">Downloads a real accessibility conformance snapshot generated from an axe-core scan of this page right now — not a static template.</Callout>
     </section>
   )
 }

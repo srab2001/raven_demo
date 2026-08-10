@@ -40,7 +40,7 @@ export default function DashboardAttestation() {
     <section>
       <h2>Daily product health — {new Date().toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}</h2>
       <p className="subtext">Each product team confirms dashboard health by 10:00 ET • Auto-nags at 09:45 if missing</p>
-      <Callout>Medications is red — a real incident state (refill volume down 87%, already paged). Platform &amp; Infrastructure is gold — an attestation that's overdue and auto-nagged, not yet an incident. Click "Flag for review" on a green tile to see the state change live.</Callout>
+      <Callout id="demo3.callout.dashboard">Medications is red — a real incident state (refill volume down 87%, already paged). Platform &amp; Infrastructure is gold — an attestation that's overdue and auto-nagged, not yet an incident. Click "Flag for review" on a green tile to see the state change live.</Callout>
       <div className="panel-grid">
         {tiles.map((tile) => (
           <article key={tile.team} className={`tile tile-${tile.status}`}>

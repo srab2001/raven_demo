@@ -15,6 +15,18 @@ approval. First-time visitors land on `/pending` after signing in until an
 admin approves them at `/admin`. See [docs/ADMIN_AUTH.md](docs/ADMIN_AUTH.md)
 for the required environment variables and the full approval workflow.
 
+## Explainer callouts and hover tooltips
+
+Each demo shows speech-bubble callouts (💬) next to key panels explaining
+what you're looking at and why it's real (not a static mockup), plus a
+hover tooltip above each of Demo 1's six chaos scenario buttons describing
+what that scenario actually injects. Use the toggle at the bottom of each
+demo to show or hide the callouts.
+
+An admin can edit this callout and tooltip text — for any of the three
+demos — from the "Edit demo copy" section on `/admin`, with no code deploy
+required. Each item can be reset to its original default at any time.
+
 ## How to run locally
 
 1. Open a terminal in the repository root.

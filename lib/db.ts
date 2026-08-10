@@ -36,6 +36,14 @@ export async function ensureSchema() {
       approved_by TEXT
     )
   `
+  await sql`
+    CREATE TABLE IF NOT EXISTS content_overrides (
+      key TEXT PRIMARY KEY,
+      text TEXT NOT NULL,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_by TEXT
+    )
+  `
   schemaReady = true
 }
 

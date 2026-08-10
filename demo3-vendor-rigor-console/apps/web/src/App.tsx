@@ -6,6 +6,7 @@ import ShipChecklist from './components/ShipChecklist'
 import EmailGuardrail from './components/EmailGuardrail'
 import Callout from './components/Callout'
 import CalloutToggle from './components/CalloutToggle'
+import { ContentProvider } from './lib/contentContext'
 
 type PanelKey = 'pr' | 'dashboard' | 'checklist' | 'email'
 
@@ -20,6 +21,7 @@ function App() {
   const [activePanel, setActivePanel] = useState<PanelKey>('pr')
 
   return (
+    <ContentProvider>
     <main className="app-shell">
       <header className="hero-card">
         <p className="eyebrow">Demo 3</p>
@@ -34,7 +36,7 @@ function App() {
           </button>
         ))}
       </nav>
-      <Callout>Four governance surfaces for the Patient Portal contract — every control on these tabs is interactive, not a static mockup.</Callout>
+      <Callout id="demo3.callout.intro">Four governance surfaces for the Patient Portal contract — every control on these tabs is interactive, not a static mockup.</Callout>
 
       {activePanel === 'pr' && <PrBoard />}
       {activePanel === 'dashboard' && <DashboardAttestation />}
@@ -42,6 +44,7 @@ function App() {
       {activePanel === 'email' && <EmailGuardrail />}
       <CalloutToggle />
     </main>
+    </ContentProvider>
   )
 }
 
