@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import './App.css'
-import EligibilityLookup from './components/EligibilityLookup'
+import EligibilityLookup, { isValidIcn } from './components/EligibilityLookup'
 import LatencyWaterfall, { type LatencyBar } from './components/LatencyWaterfall'
 import ChaosToggle from './components/ChaosToggle'
 import EventLog, { type LogEntry, type LogLevel } from './components/EventLog'
@@ -104,6 +104,11 @@ function App() {
   }
 
   const runLookup = async () => {
+    if (!isValidIcn(icn)) {
+      addLog(`Lookup blocked — "${icn}" is not a valid ICN`, 'error')
+      return
+    }
+
     if (chaos === 'ratelimit') {
       enqueue([icn])
       return
