@@ -6,6 +6,7 @@
     { "source": "/demo1", "destination": "/demo1/index.html" },
     { "source": "/demo2", "destination": "/demo2/index.html" },
     { "source": "/demo3", "destination": "/demo3/index.html" },
+    { "source": "/demo4", "destination": "/demo4/index.html" },
     { "source": "/login", "destination": "/login/index.html" },
     { "source": "/pending", "destination": "/pending/index.html" },
     { "source": "/admin", "destination": "/admin/index.html" },

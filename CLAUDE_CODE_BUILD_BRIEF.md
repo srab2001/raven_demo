@@ -1,7 +1,7 @@
 # Claude Code Build Brief — RAVEN/SQUARES Demonstration Prototypes
 
 **Audience:** Claude Code (or any coding agent) building the interactive proposal demonstrations described below.
-**Output expected:** Four deployable web applications, source in GitHub, live URLs, README per repo. (Demos 1–3 are built; Demo 4 is spec'd below and in [docs/XAAS_STRATEGY.md](docs/XAAS_STRATEGY.md), pending a build pass.)
+**Output expected:** Four deployable web applications, source in GitHub, live URLs, README per repo. (All four are built; see [docs/XAAS_STRATEGY.md](docs/XAAS_STRATEGY.md) and [demo4-xaas-explainability-fabric/docs/](demo4-xaas-explainability-fabric/docs/) for what Demo 4's build pass actually implemented versus this brief's original spec.)
 **Reference wireframes:** See `wireframes/` folder in this package — one SVG + PNG per scene/flow.
 
 ---

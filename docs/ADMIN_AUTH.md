@@ -7,9 +7,9 @@ workflow, and known limitations.
 ## Architecture
 
 - `middleware.ts` (Vercel Edge Middleware) checks a signed session cookie on
-  every request to `/`, `/demo1`, `/demo2`, `/demo3`, and `/admin`. No valid
-  session → redirect to `/login`. Valid session but not an admin on `/admin`
-  → redirect to `/`.
+  every request to `/`, `/demo1`, `/demo2`, `/demo3`, `/demo4`, and `/admin`.
+  No valid session → redirect to `/login`. Valid session but not an admin on
+  `/admin` → redirect to `/`.
 - `/api/auth/google/start` redirects to Google's OAuth consent screen.
   `/api/auth/google/callback` exchanges the code, verifies the ID token
   against Google's JWKS, upserts a row in the `users` table (Neon Postgres),
@@ -27,6 +27,11 @@ workflow, and known limitations.
   Cross-reviewer/quality/state for a PR row stay client-side and ephemeral
   (same as the seeded rows); only the base entry (title/author/team)
   persists.
+- `/api/xaas/explain` and `/api/xaas/feedback` (Demo 4's XaaS fabric) allow
+  any valid session — same as `/api/pr-board`'s GET/POST, there's no
+  admin-only path here. They operate on the `model_cards`,
+  `subgroup_metrics`, `conformal_residuals`, and `disagree_tickets` tables.
+  See [demo4-xaas-explainability-fabric/docs/XAAS_CONTRACT.md](../demo4-xaas-explainability-fabric/docs/XAAS_CONTRACT.md).
 - `/api/status` requires any valid session (not admin-only) and reports
   boolean presence of required env vars, live database reachability, a
   content-system summary, and the current deployment's commit/branch/env
