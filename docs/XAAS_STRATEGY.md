@@ -1,9 +1,14 @@
 # Demo 4 Strategy — The Explainability-as-a-Service (XaaS) Fabric
 
-**Status:** Proposed / spec'd for build. Not yet implemented — this document
-and the "DEMO 4" section of
-[CLAUDE_CODE_BUILD_BRIEF.md](../CLAUDE_CODE_BUILD_BRIEF.md) are the strategy
-and spec; no `demo4-*` code exists in this repo yet.
+**Status:** Phase 0 (this proposal) built. `demo4-xaas-explainability-fabric/`
+implements the "DEMO 4" section of
+[CLAUDE_CODE_BUILD_BRIEF.md](../CLAUDE_CODE_BUILD_BRIEF.md) — a real
+Postgres-backed `/api/xaas/explain` and `/api/xaas/feedback`, seeded model
+cards, and the Integration Simulator described below. See
+[demo4-xaas-explainability-fabric/docs/XAAS_CONTRACT.md](../demo4-xaas-explainability-fabric/docs/XAAS_CONTRACT.md)
+for the implemented contract and
+[MODEL_CARD_SCHEMA.md](../demo4-xaas-explainability-fabric/docs/MODEL_CARD_SCHEMA.md)
+for exactly what's live versus seeded. Phases 1–2 below remain proposed.
 
 ## The one-liner
 

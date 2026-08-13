@@ -5,10 +5,11 @@
   "workspaces": [
     "demo1-lighthouse-under-load/apps/web",
     "demo2-508-eligibility-wizard",
-    "demo3-vendor-rigor-console/apps/web"
+    "demo3-vendor-rigor-console/apps/web",
+    "demo4-xaas-explainability-fabric"
   ],
   "scripts": {
-    "build": "rm -rf dist && npm run build --workspaces && mkdir -p dist && cp site/index.html dist/index.html && cp -R demo1-lighthouse-under-load/apps/web/dist dist/demo1 && cp -R demo2-508-eligibility-wizard/dist dist/demo2 && cp -R demo3-vendor-rigor-console/apps/web/dist dist/demo3 && cp -R login dist/login && cp -R pending dist/pending && cp -R admin dist/admin && cp -R how-its-built dist/how-its-built"
+    "build": "rm -rf dist && npm run build --workspaces && mkdir -p dist && cp site/index.html dist/index.html && cp -R demo1-lighthouse-under-load/apps/web/dist dist/demo1 && cp -R demo2-508-eligibility-wizard/dist dist/demo2 && cp -R demo3-vendor-rigor-console/apps/web/dist dist/demo3 && cp -R demo4-xaas-explainability-fabric/dist dist/demo4 && cp -R login dist/login && cp -R pending dist/pending && cp -R admin dist/admin && cp -R how-its-built dist/how-its-built"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0"

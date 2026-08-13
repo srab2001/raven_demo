@@ -8,7 +8,7 @@ This repository contains three interactive demo prototypes:
 - Demo 2: 508-First Eligibility Wizard — a keyboard-first, one-question-per-screen wizard with a live accessibility panel (real axe-core scan on every step), an NVDA-style screen-reader simulator, a live Flesch-Kincaid reading-level meter, and a rules-vs-AI decision comparison with citations. For evaluators: toggle "NVDA simulator" on and tab through the separation-date step; use "Show divergence example" on the result step to see the human-review escalation.
 - Demo 3: Vendor Rigor Console — a governance console with a cross-team PR review board, daily dashboard attestation, a ship-checklist release gate that blocks the Ship button until gates pass, and a government-email guardrail composer that blocks Send until a PDS Health contact is added or an override is logged. Any approved viewer can add a new PR (title, author, team) via the "Add a PR" form at the bottom of the PR board — it starts BLOCKED with no cross-reviewer assigned, same as the seeded example, and persists for every viewer until an admin removes it.
 
-**Demo 4 (proposed, not yet built):** an Explainability-as-a-Service (XaaS) fabric that any RAVEN feature calls before showing a recommendation — rules matched, source records, a conformal confidence interval, live subgroup fairness metrics, and an "I disagree" path to the model owner and caseworker. See [docs/XAAS_STRATEGY.md](docs/XAAS_STRATEGY.md).
+- Demo 4: Explainability-as-a-Service (XaaS) Fabric — an "Integration simulator" lets you pick which RAVEN feature is calling (Demo 1's eligibility lookup, Demo 2's wizard result, or a future GPD-placement feature that doesn't exist elsewhere in this package) and watch the same Explanation Card render rules matched, source records, a conformal confidence interval, live subgroup fairness metrics, and an "I disagree" button. For evaluators: switch callers to see the same `/api/xaas/explain` contract handle three different payload shapes; click "I disagree" to file a real ticket and watch it appear in the audit trail below. See [docs/XAAS_STRATEGY.md](docs/XAAS_STRATEGY.md).
 
 ## Signing in
 
@@ -63,9 +63,13 @@ content item from its live editor still requires an admin session, same as
    - Demo 1: `cd demo1-lighthouse-under-load/apps/web && npm install`
    - Demo 2: `cd demo2-508-eligibility-wizard && npm install`
    - Demo 3: `cd demo3-vendor-rigor-console/apps/web && npm install`
+   - Demo 4: `cd demo4-xaas-explainability-fabric && npm install`
 3. Start the app:
    - `npm run dev`
-4. Open the local Vite URL shown in the terminal.
+4. Open the local Vite URL shown in the terminal. Demo 4's API calls
+   (`/api/xaas/explain`, `/api/xaas/feedback`) only work under `vercel dev`
+   from the repository root with `DATABASE_URL` and `SESSION_SECRET` set —
+   see [docs/ADMIN_AUTH.md](docs/ADMIN_AUTH.md).
 
 ## How to deploy to Vercel
 
@@ -78,6 +82,7 @@ content item from its live editor still requires an admin session, same as
    - [Lighthouse Under Load](https://raven-squares-build-package-1.vercel.app/demo1/) opens Demo 1.
    - [508-First Eligibility Wizard](https://raven-squares-build-package-1.vercel.app/demo2/) opens Demo 2.
    - [Vendor Rigor Console](https://raven-squares-build-package-1.vercel.app/demo3/) opens Demo 3.
+   - [Explainability-as-a-Service Fabric](https://raven-squares-build-package-1.vercel.app/demo4/) opens Demo 4.
 
 ## Notes
 
