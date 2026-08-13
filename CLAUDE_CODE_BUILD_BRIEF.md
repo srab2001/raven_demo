@@ -1,7 +1,7 @@
 # Claude Code Build Brief — RAVEN/SQUARES Demonstration Prototypes
 
 **Audience:** Claude Code (or any coding agent) building the interactive proposal demonstrations described below.
-**Output expected:** Three deployable web applications, source in GitHub, live URLs, README per repo.
+**Output expected:** Four deployable web applications, source in GitHub, live URLs, README per repo. (Demos 1–3 are built; Demo 4 is spec'd below and in [docs/XAAS_STRATEGY.md](docs/XAAS_STRATEGY.md), pending a build pass.)
 **Reference wireframes:** See `wireframes/` folder in this package — one SVG + PNG per scene/flow.
 
 ---
@@ -242,13 +242,163 @@ Most vendors *claim* rigor in prose. This demo shows rigor as tooling that the v
 
 ---
 
+# DEMO 4 — "Explainability-as-a-Service (XaaS) Fabric" (NEW)
+
+**Origin — the problem this demo answers:** Demos 1–3 each prove one piece of
+trustworthy delivery — resilient data pulls, cited rules-vs-AI transparency,
+and tooling-enforced rigor — but each proves it inside its own feature. This
+demo shows those aren't three separate improvisations: they're one reusable
+microservice contract that every current and future RAVEN feature calls
+before it shows a Veteran or caseworker a recommendation. See
+[docs/XAAS_STRATEGY.md](docs/XAAS_STRATEGY.md) for the full strategy,
+compliance framing, and phased roadmap this build brief implements Phase 0
+of.
+
+For every recommendation, the XaaS fabric returns: (a) the eligibility rules
+matched, (b) the source records that triggered them, (c) a conformal
+confidence interval, (d) subgroup performance metrics (age, race, discharge
+status, geography) from a live model-card database, and (e) an "I disagree"
+button that opens a structured feedback path back to the model owner and the
+Veteran's caseworker.
+
+## Architecture
+
+```
+demo4-xaas-explainability-fabric/
+├── apps/
+│   ├── web/                        # React 18 + TS + Vite — the demo harness
+│   │   └── src/
+│   │       ├── components/
+│   │       │   ├── ExplanationCard.tsx      # the embeddable widget — all 5 items in one panel
+│   │       │   ├── RulesMatchedPanel.tsx    # cited predicates, same style as demo2's rulesEngine output
+│   │       │   ├── SourceRecordTrail.tsx    # provenance back to Patient/Clinical/Coverage resources
+│   │       │   ├── ConfidenceBand.tsx       # conformal interval, shaded band not a bare percentage
+│   │       │   ├── SubgroupFairnessPanel.tsx # age/race/discharge/geography table, timestamped
+│   │       │   ├── DisagreeModal.tsx        # structured "I disagree" intake form
+│   │       │   └── IntegrationSimulator.tsx # evaluator picks: call from Demo 1 / Demo 2 / Demo 3
+│   │       └── App.tsx
+│   ├── xaas-service/                # Node/Express (or Vercel functions) — the actual microservice
+│   │   └── src/
+│   │       ├── explain.ts                   # POST /v1/explain
+│   │       ├── conformal.ts                 # split-conformal interval from a seeded calibration set
+│   │       ├── modelCardRegistry.ts         # reads model-card DB for provenance + subgroup metrics
+│   │       ├── feedback.ts                  # POST /v1/feedback — "I disagree" intake + routing
+│   │       └── server.ts
+│   └── model-card-db/               # seed schema + data standing in for the "live" model-card DB
+│       ├── schema.sql
+│       └── seed/*.json              # one model card per RAVEN recommendation type, timestamped
+├── docs/
+│   ├── XAAS_CONTRACT.md            # the /v1/explain and /v1/feedback contract every feature codes to
+│   ├── MODEL_CARD_SCHEMA.md
+│   ├── FEEDBACK_ROUTING.md         # how an "I disagree" ticket reaches model owner + caseworker
+│   └── scenes/
+└── README.md
+```
+
+## Scene-by-scene build prompts
+
+### Prompt 4.1 — Scaffold + the Explanation Card
+
+> Scaffold the demo4 monorepo per the architecture above. Build `explain.ts`
+> to accept the `/v1/explain` request shape in `docs/XAAS_STRATEGY.md` and
+> return a deterministic, seeded response. Build `ExplanationCard.tsx` to
+> render `RulesMatchedPanel.tsx` (rule id, predicate, citation, matched)
+> and `SourceRecordTrail.tsx` (system, resource type/id, retrieval
+> timestamp) from that response.
+>
+> **Acceptance:** Given a seeded `recommendationId`, the card renders at
+> least two matched rules with citations and at least one source record
+> with a retrieval timestamp, with no network round-trip failures.
+
+### Prompt 4.2 — Conformal confidence band
+
+> Implement `conformal.ts` as a real split-conformal calculation over a
+> seeded calibration set (documented in `docs/scenes/4.2.md` — size, method,
+> "as of" date). Build `ConfidenceBand.tsx` to render the point estimate as
+> a shaded band between `lower` and `upper`, labeled with the stated
+> coverage target (e.g. "90% target coverage"), never a bare percentage.
+>
+> **Acceptance:** Band renders with visible lower/upper bounds and a stated
+> coverage target; changing the seeded calibration set changes the band
+> width, proving the math is live, not hardcoded.
+
+### Prompt 4.3 — Subgroup fairness panel from the live model-card DB
+
+> Build `model-card-db/schema.sql` (`model_card`, `subgroup_metric`) and
+> seed it with synthetic-but-labeled figures across age, race, discharge
+> status, and geography. Build `modelCardRegistry.ts` to query it and
+> `SubgroupFairnessPanel.tsx` to render one row per dimension/group with
+> `n`, accuracy, FPR, and a `lastUpdated` timestamp.
+>
+> **Acceptance:** Panel shows all four dimensions, every row carries a
+> freshness timestamp, and a `KNOWN_SIMPLIFICATIONS` note in
+> `docs/MODEL_CARD_SCHEMA.md` states the data is synthetic and how a real
+> deployment would populate it.
+
+### Prompt 4.4 — "I disagree" structured feedback loop
+
+> Build `DisagreeModal.tsx` (disagree reason, free text, caseworker id) and
+> `feedback.ts` implementing `POST /v1/feedback` — create a ticket, route it
+> to the model owner and the caseworker, and append an audit event using
+> the same append-only pattern as Demo 3's `AUDIT_TRAIL.md`. Document the
+> routing rule in `docs/FEEDBACK_ROUTING.md`.
+>
+> **Acceptance:** Submitting the modal returns a `ticketId` and `routedTo`
+> list, the ticket is visible in an audit view, and an SLA clock (e.g. 24h)
+> is shown.
+
+### Prompt 4.5 — Cross-demo integration simulator
+
+> Build `IntegrationSimulator.tsx`: a control that lets the evaluator pick
+> "Demo 1 eligibility lookup," "Demo 2 wizard result," or "Demo 3 risk
+> score," and calls `/v1/explain` with that caller's payload shape, then
+> renders the same `ExplanationCard.tsx` against the result. This is the
+> load-bearing proof of reuse — one contract, three callers, not three
+> copy-pasted widgets.
+>
+> **Acceptance:** All three caller options render successfully through the
+> same `ExplanationCard.tsx` instance with visibly different rule sets and
+> source records per caller.
+
+### Prompt 4.6 — Docs + hand-off
+
+> Generate `XAAS_CONTRACT.md` documenting the request/response shape for
+> `/v1/explain` and `/v1/feedback`. Update the root README with the new
+> demo and its public URL. Record a short walkthrough showing all three
+> integration-simulator callers and one "I disagree" submission end-to-end.
+
+## Why this demo differentiates
+
+Demos 1–3 each prove trustworthy delivery inside one feature. This demo
+proves the trust is infrastructure: the same contract, called from three
+different features, always returns rules, provenance, a calibrated
+confidence interval, live fairness metrics, and a working recourse path.
+Federal AI risk-management guidance for rights-impacting AI use cases (see
+`docs/XAAS_STRATEGY.md`) asks for almost exactly these five things —
+explanation, tested and monitored performance, quantified uncertainty, and
+a route to human review. This demo shows that operationalized as a service
+any team can call, not asserted in a policy slide.
+
+## Requirements traceability — Demo 4
+
+| XaaS deliverable | Codified in | Enforced/shown by | Wireframe |
+| --- | --- | --- | --- |
+| (a) Eligibility rules matched | `RulesMatchedPanel.tsx` | Explanation Card, cited predicates | `d4_scene1_explanation_card` |
+| (b) Source records that triggered them | `SourceRecordTrail.tsx` | Explanation Card, resource-level provenance | `d4_scene1_explanation_card` |
+| (c) Conformal confidence interval | `ConfidenceBand.tsx`, `conformal.ts` | Shaded interval with stated coverage target | `d4_scene2_confidence_band` |
+| (d) Subgroup performance metrics (live model-card DB) | `SubgroupFairnessPanel.tsx`, `model-card-db/` | Timestamped per-dimension table | `d4_scene3_subgroup_fairness` |
+| (e) "I disagree" → model owner + caseworker | `DisagreeModal.tsx`, `feedback.ts` | Structured ticket, audit trail, SLA clock | `d4_scene4_disagree_feedback` |
+| Reuse across features (the actual thesis) | `IntegrationSimulator.tsx` | Same contract, three caller payload shapes, one widget | `d4_scene5_integration_simulator` |
+
+---
+
 ## Global acceptance gate — do not ship any demo without
 
 1. Public URL live on Vercel, no auth required.
 2. GitHub repo public, README + ARCHITECTURE + LICENSE + a walkthrough MP4.
 3. CI green: lint + typecheck + unit + axe + Playwright.
 4. Every scene has a matching entry in `docs/scenes/` with wireframe link, acceptance criteria, and evaluator narration script (≤ 60 words).
-5. Catalog docs present: `FAILURE_MODE_CATALOG.md` (demo 1), `VPAT.pdf` (demo 2), `AUDIT_TRAIL.md` + `POLICY.md` (demo 3).
+5. Catalog docs present: `FAILURE_MODE_CATALOG.md` (demo 1), `VPAT.pdf` (demo 2), `AUDIT_TRAIL.md` + `POLICY.md` (demo 3), `XAAS_CONTRACT.md` + `MODEL_CARD_SCHEMA.md` + `FEEDBACK_ROUTING.md` (demo 4).
 6. No real PII anywhere — CI check greps for common PII patterns.
 
 ---
@@ -279,6 +429,14 @@ The `wireframes/` folder contains one SVG and one PNG per scene. Layout labels a
 - `d3_scene3_ship_checklist` — Four-gate ship checklist with all four requirements enforced
 - `d3_scene4_email_guardrail` — Gmail composer guardrail requiring PDS Health CC
 
+**Demo 4 — Explainability-as-a-Service (XaaS) Fabric**
+
+- `d4_scene1_explanation_card` — Rules matched + source-record trail in one panel
+- `d4_scene2_confidence_band` — Conformal confidence interval as a shaded band
+- `d4_scene3_subgroup_fairness` — Timestamped subgroup performance table from the model-card DB
+- `d4_scene4_disagree_feedback` — "I disagree" modal, routed ticket, audit trail, SLA clock
+- `d4_scene5_integration_simulator` — Same contract called from three different RAVEN features
+
 ---
 
 ## Requirements traceability — Demo 3
@@ -300,5 +458,7 @@ The `wireframes/` folder contains one SVG and one PNG per scene. Layout labels a
 **Week 4:** Prompt 2.3 + 2.4 (rules + AI, VPAT).
 **Week 5:** Prompts 3.1–3.2 (PR board + daily attestations — the two most visible controls).
 **Week 6:** Prompts 3.3–3.5 (ship checklist, mail guardrail, audit + walkthrough).
+**Week 7:** Prompts 4.1–4.3 (Explanation Card, confidence band, subgroup fairness panel — the XaaS contract and its live model-card DB).
+**Week 8:** Prompts 4.4–4.6 (disagree/feedback loop, cross-demo integration simulator, docs + hand-off).
 
-Ship all three demos with a shared landing page at `/` that links to each — one URL to hand the evaluator.
+Ship all four demos with a shared landing page at `/` that links to each — one URL to hand the evaluator.

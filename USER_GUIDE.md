@@ -8,6 +8,8 @@ This repository contains three interactive demo prototypes:
 - Demo 2: 508-First Eligibility Wizard — a keyboard-first, one-question-per-screen wizard with a live accessibility panel (real axe-core scan on every step), an NVDA-style screen-reader simulator, a live Flesch-Kincaid reading-level meter, and a rules-vs-AI decision comparison with citations. For evaluators: toggle "NVDA simulator" on and tab through the separation-date step; use "Show divergence example" on the result step to see the human-review escalation.
 - Demo 3: Vendor Rigor Console — a governance console with a cross-team PR review board, daily dashboard attestation, a ship-checklist release gate that blocks the Ship button until gates pass, and a government-email guardrail composer that blocks Send until a PDS Health contact is added or an override is logged. Any approved viewer can add a new PR (title, author, team) via the "Add a PR" form at the bottom of the PR board — it starts BLOCKED with no cross-reviewer assigned, same as the seeded example, and persists for every viewer until an admin removes it.
 
+**Demo 4 (proposed, not yet built):** an Explainability-as-a-Service (XaaS) fabric that any RAVEN feature calls before showing a recommendation — rules matched, source records, a conformal confidence interval, live subgroup fairness metrics, and an "I disagree" path to the model owner and caseworker. See [docs/XAAS_STRATEGY.md](docs/XAAS_STRATEGY.md).
+
 ## Signing in
 
 Every page, including the three demos, requires Google sign-in and admin
