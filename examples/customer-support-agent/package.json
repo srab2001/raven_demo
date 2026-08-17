@@ -1,0 +1,19 @@
+{
+  "name": "customer-support-agent",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Standalone example: a customer support agent built with the Anthropic Messages API and three tools (get_customer, lookup_order, process_refund).",
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}
