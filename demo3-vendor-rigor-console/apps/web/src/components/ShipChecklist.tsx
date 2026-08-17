@@ -41,7 +41,7 @@ export default function ShipChecklist() {
     <section className="panel">
       <h2>Ship checklist — Secure Messaging v2.14 release</h2>
       <p className="subtext">All gates must be green before "Ship" button unlocks • Target release: 07 Aug 14:00 ET</p>
-      <ul className="gate-list">
+      <ul className="gate-list" data-tour="gate-list">
         {gates.map((gate) => (
           <li key={gate.title} className={`gate-row gate-${gate.status}`}>
             <div>
@@ -61,7 +61,7 @@ export default function ShipChecklist() {
       ) : (
         <div className="not-ready-banner">Ship is blocked until gates 1–3 are green.</div>
       )}
-      <button type="button" className="ship-button" disabled={!shipReady} onClick={() => setShipped(true)}>{shipped ? 'Shipped ✓' : 'Ship v2.14'}</button>
+      <button type="button" className="ship-button" disabled={!shipReady} onClick={() => setShipped(true)} data-tour="ship-button">{shipped ? 'Shipped ✓' : 'Ship v2.14'}</button>
     </section>
   )
 }

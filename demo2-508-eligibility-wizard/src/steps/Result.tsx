@@ -34,7 +34,7 @@ export default function Result() {
       <h2 ref={headingRef} tabIndex={-1}>Your recommended benefits</h2>
       <p>Based on your answers, here are the programs you likely qualify for.</p>
 
-      <div className="engine-toggle" role="group" aria-label="Decision engine">
+      <div className="engine-toggle" role="group" aria-label="Decision engine" data-tour="engine-toggle">
         <span className="engine-toggle-label">Decision engine:</span>
         <button type="button" className={mode === 'rules' ? 'active' : ''} aria-pressed={mode === 'rules'} onClick={() => setMode('rules')}>Rules</button>
         <button type="button" className={mode === 'ai' ? 'active' : ''} aria-pressed={mode === 'ai'} onClick={() => setMode('ai')}>AI</button>
@@ -83,7 +83,7 @@ export default function Result() {
 
       <div className="ai-disclaimer" role="note">AI never decides eligibility — it explains the decision. All routing goes through the rules engine.</div>
 
-      <div className="actions">
+      <div className="actions" data-tour="vpat-download">
         <button type="button" onClick={back}>Back</button>
         <button type="button" onClick={() => setShowDivergence((current) => !current)}>{showDivergence ? 'Show agreement example' : 'Show divergence example'}</button>
         <button type="button" onClick={handleDownloadVpat} disabled={downloading}>{downloading ? 'Generating…' : 'Download VPAT'}</button>

@@ -56,6 +56,18 @@ Any approved reviewer can view `/how-its-built`; saving or resetting a
 content item from its live editor still requires an admin session, same as
 `/admin`.
 
+## Take the tour
+
+Every demo (1 through 4) has a "Take the tour" button next to its title.
+It highlights each key section in sequence with a fixed guide card and
+Back/Next/Skip controls, driven by a step list specific to that page — a
+self-serve walkthrough for a first-time viewer exploring without a
+presenter narrating live. Demo 2's tour advances the wizard itself
+(discharge → separation → result) as it goes so it can highlight fields on
+steps you haven't reached yet; Demo 3's tour switches tabs the same way.
+See [docs/BEHIND_THE_HOOD_DEMO.md](docs/BEHIND_THE_HOOD_DEMO.md) for the
+presenter-narrated version of the same walkthrough, click-by-click.
+
 ## How to run locally
 
 1. Open a terminal in the repository root.

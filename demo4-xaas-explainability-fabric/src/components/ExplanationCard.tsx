@@ -15,13 +15,13 @@ export default function ExplanationCard({ response, onDisagreeSubmitted }: Props
   const [modalOpen, setModalOpen] = useState(false)
 
   return (
-    <section className="panel explanation-card">
+    <section className="panel explanation-card" data-tour="explanation-card">
       <div className="explanation-header">
         <div>
           <p className="eyebrow">Recommendation {response.recommendationId}</p>
           <h2>{response.program}</h2>
         </div>
-        <button type="button" className="disagree-button" onClick={() => setModalOpen(true)}>
+        <button type="button" className="disagree-button" onClick={() => setModalOpen(true)} data-tour="disagree-button">
           I disagree with this recommendation
         </button>
       </div>

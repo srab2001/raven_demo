@@ -110,7 +110,7 @@ export default function PrBoard() {
       <article className="panel pr-board">
         <h2>Cross-check PR board — Patient Portal contract</h2>
         <p className="subtext">Every PR requires a strong engineer from another team to review before merge (Aug–Sep policy).</p>
-        <div className="table-wrap">
+        <div className="table-wrap" data-tour="pr-table">
           <table>
             <thead>
               <tr>
@@ -148,7 +148,7 @@ export default function PrBoard() {
             {log.map((entry, index) => <li key={index}>{entry}</li>)}
           </ul>
         )}
-        <form className="add-pr-form" onSubmit={addPr}>
+        <form className="add-pr-form" onSubmit={addPr} data-tour="add-pr-form">
           <h3>Add a PR</h3>
           <div className="add-pr-fields">
             <label>
