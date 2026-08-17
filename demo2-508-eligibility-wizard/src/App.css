@@ -1,5 +1,6 @@
 .app-shell { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid; gap: 1rem; }
 .hero-card, .wizard-card, .result-card, .a11y-panel { background: white; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08); }
+.hero-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
 .eyebrow { text-transform: uppercase; letter-spacing: 0.2em; color: #0071bc; font-weight: 700; font-size: 0.75rem; }
 .progress { height: 0.7rem; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin-top: 1rem; }
 .progress-bar { height: 100%; background: linear-gradient(90deg, #0071bc, #22c55e); }
@@ -84,3 +85,17 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid 
 .callout p { margin: 0; }
 body.callouts-hidden .callout { display: none; }
 .callout-toggle { position: fixed; bottom: 1rem; right: 1rem; z-index: 100; background: #d97706; color: white; font-weight: 700; border-radius: 999px; padding: 0.7rem 1.2rem; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2); }
+
+/* Guided tour (GuidedTour.tsx) */
+.tour-button { flex: none; padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 700; color: #0071bc; background: #fff; border: 1px solid #0071bc; border-radius: 999px; cursor: pointer; }
+.tour-button:hover { background: #eef2f9; }
+.tour-highlight { outline: 3px solid #0071bc; outline-offset: 4px; border-radius: 4px; box-shadow: 0 0 0 6px rgba(0, 113, 188, 0.18); transition: box-shadow 0.2s ease; }
+.tour-card { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 1000; width: min(340px, calc(100vw - 2.5rem)); background: #13233f; color: #fff; padding: 1.1rem 1.25rem; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35); }
+.tour-progress { margin: 0 0 0.4rem; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #a8c5e2; }
+.tour-title { margin: 0 0 0.5rem; font-size: 1.05rem; }
+.tour-body { margin: 0 0 1rem; font-size: 0.9rem; color: #dce8f5; }
+.tour-actions { display: flex; justify-content: space-between; align-items: center; }
+.tour-nav { display: flex; gap: 0.5rem; }
+.tour-actions button { padding: 0.4rem 0.9rem; font-size: 0.85rem; font-weight: 700; border-radius: 999px; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.4); background: transparent; color: #fff; }
+.tour-actions .tour-next { background: #fff; color: #13233f; border-color: #fff; }
+.tour-actions .tour-skip { border-color: transparent; color: #a8c5e2; padding-left: 0; }

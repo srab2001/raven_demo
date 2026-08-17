@@ -2,7 +2,7 @@ import type { FeedbackTicket } from '../lib/types'
 
 export default function AuditTicketList({ tickets }: { tickets: FeedbackTicket[] }) {
   return (
-    <section className="panel audit-panel">
+    <section className="panel audit-panel" data-tour="audit-trail">
       <h2>Disagree audit trail</h2>
       <p className="subtext">
         Every "I disagree" submission lands here — the same append-only posture as Demo 3's ship-checklist

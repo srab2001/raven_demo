@@ -9,6 +9,7 @@ import ResultPanel, { type ResultView } from './components/ResultPanel'
 import BulkQueue from './components/BulkQueue'
 import Callout from './components/Callout'
 import CalloutToggle from './components/CalloutToggle'
+import { GuidedTour, type TourStep } from './components/GuidedTour'
 import { ContentProvider } from './lib/contentContext'
 import { CircuitBreaker, type CircuitState } from './lib/circuitBreaker'
 import { validateFhirPatient, isEmptyBundle } from './lib/fhirValidator'
@@ -233,46 +234,103 @@ function App() {
     enqueue(icns)
   }
 
+  const [tourActive, setTourActive] = useState(false)
+
+  const TOUR_STEPS: TourStep[] = [
+    {
+      selector: '[data-tour="hero"]',
+      title: 'Welcome to Lighthouse Under Load',
+      body: 'This demo simulates an eligibility lookup against three real VA Lighthouse APIs, with six chaos scenarios that inject real failures — not just different labels. This tour covers every part of the page; skip ahead or go back any time.',
+    },
+    {
+      selector: '[data-tour="lookup"]',
+      title: 'Eligibility lookup',
+      body: 'Enter any ICN and run a lookup — it simulates real calls to Patient/v0, Clinical/v0, and Coverage/v0. The result card above changes shape depending on which chaos scenario is active on the right.',
+    },
+    {
+      selector: '[data-tour="latency"]',
+      title: 'Latency waterfall',
+      body: 'Real per-API timing, redrawn after every lookup. Watch Coverage/v0 specifically when you try the "Slow / circuit breaker" scenario.',
+    },
+    {
+      selector: '[data-tour="health"]',
+      title: 'Endpoint health',
+      body: 'Each tile is a live circuit-breaker state per endpoint — CLOSED (green) is healthy, OPEN (red) means that endpoint tripped and is being served from cache instead of making you wait.',
+    },
+    {
+      selector: '[data-tour="chaos"]',
+      title: 'Chaos controls',
+      body: 'Switching scenarios here changes what the lookup actually returns. Hover any scenario for a definition of exactly what it injects.',
+    },
+    {
+      selector: '[data-tour="eventlog"]',
+      title: 'Event log',
+      body: 'Every retry, cache decision, and re-auth is logged here as it happens — nothing about the failure handling is hidden from you.',
+    },
+    {
+      selector: '[data-tour="bulkqueue"]',
+      title: 'Bulk retry queue',
+      body: 'This section only appears under the 429 rate-limit scenario, which this step just switched on for you. 429 responses are retried automatically with exponential backoff — watch the status pill move from "Retrying" to "Complete."',
+      beforeShow: () => setChaos('ratelimit'),
+    },
+  ]
+
   return (
     <ContentProvider>
     <main className="app-shell">
-      <header className="hero-card">
-        <p className="eyebrow">Demo 1</p>
-        <h1>Lighthouse Under Load</h1>
+      <header className="hero-card" data-tour="hero">
+        <div className="hero-head">
+          <div>
+            <p className="eyebrow">Demo 1</p>
+            <h1>Lighthouse Under Load</h1>
+          </div>
+          <button type="button" className="tour-button" onClick={() => setTourActive(true)}>Take the tour</button>
+        </div>
         <p>Eligibility lookup with visible failure modes and a transparent event trail.</p>
       </header>
 
       <section className="panel-grid">
         <section className="panel-stack">
-          <EligibilityLookup
-            icn={icn}
-            onIcnChange={setIcn}
-            onSubmit={runLookup}
-            loading={lookupLoading}
-            disabledReason={chaos === 'ratelimit' ? 'Rate-limit chaos routes lookups through the bulk queue below.' : undefined}
-          />
-          <Callout id="demo1.callout.lookup">Enter any ICN and click <strong>Run lookup</strong> to simulate a real call to Patient/v0, Clinical/v0, and Coverage/v0 — the same three Lighthouse APIs a live integration would hit.</Callout>
+          <div data-tour="lookup">
+            <EligibilityLookup
+              icn={icn}
+              onIcnChange={setIcn}
+              onSubmit={runLookup}
+              loading={lookupLoading}
+              disabledReason={chaos === 'ratelimit' ? 'Rate-limit chaos routes lookups through the bulk queue below.' : undefined}
+            />
+            <Callout id="demo1.callout.lookup">Enter any ICN and click <strong>Run lookup</strong> to simulate a real call to Patient/v0, Clinical/v0, and Coverage/v0 — the same three Lighthouse APIs a live integration would hit.</Callout>
+          </div>
           <ResultPanel view={resultView} />
-          <LatencyWaterfall bars={latencyBars} />
-          <Callout id="demo1.callout.latency">Real per-API timing, redrawn after every lookup. Watch this bar for Coverage/v0 when you switch to the "Slow / circuit breaker" scenario below.</Callout>
-          <EndpointHealth endpoints={endpointStats} />
-          <Callout id="demo1.callout.health">Each tile is a live circuit-breaker state — CLOSED (green) is healthy, OPEN (red) means that endpoint tripped and is being served from cache instead of waiting.</Callout>
+          <div data-tour="latency">
+            <LatencyWaterfall bars={latencyBars} />
+            <Callout id="demo1.callout.latency">Real per-API timing, redrawn after every lookup. Watch this bar for Coverage/v0 when you switch to the "Slow / circuit breaker" scenario below.</Callout>
+          </div>
+          <div data-tour="health">
+            <EndpointHealth endpoints={endpointStats} />
+            <Callout id="demo1.callout.health">Each tile is a live circuit-breaker state — CLOSED (green) is healthy, OPEN (red) means that endpoint tripped and is being served from cache instead of waiting.</Callout>
+          </div>
           {chaos === 'ratelimit' && (
-            <>
+            <div data-tour="bulkqueue">
               <BulkQueue bulkInput={bulkInput} onBulkInputChange={setBulkInput} onSubmit={submitBulk} queue={queue} />
               <Callout id="demo1.callout.bulkqueue">429 responses are retried automatically with exponential backoff (1s → 2s → 4s…) — watch the status pill on each row change from "Retrying" to "Complete."</Callout>
-            </>
+            </div>
           )}
         </section>
 
         <aside className="panel-stack">
-          <ChaosToggle value={chaos} onChange={toggleChaos} />
-          <Callout id="demo1.callout.chaos">Switching scenarios here changes what the lookup actually returns — a real 401, a malformed FHIR payload, an empty bundle — not just the label on the result card.</Callout>
-          <EventLog entries={log} />
-          <Callout id="demo1.callout.eventlog">Every retry, cache decision, and re-auth is logged here as it happens — nothing about the failure handling is hidden from you.</Callout>
+          <div data-tour="chaos">
+            <ChaosToggle value={chaos} onChange={toggleChaos} />
+            <Callout id="demo1.callout.chaos">Switching scenarios here changes what the lookup actually returns — a real 401, a malformed FHIR payload, an empty bundle — not just the label on the result card.</Callout>
+          </div>
+          <div data-tour="eventlog">
+            <EventLog entries={log} />
+            <Callout id="demo1.callout.eventlog">Every retry, cache decision, and re-auth is logged here as it happens — nothing about the failure handling is hidden from you.</Callout>
+          </div>
         </aside>
       </section>
       <CalloutToggle />
+      <GuidedTour steps={TOUR_STEPS} active={tourActive} onClose={() => setTourActive(false)} />
     </main>
     </ContentProvider>
   )

@@ -11,7 +11,7 @@ type Props = {
 
 export default function IntegrationSimulator({ callers, selected, onChange, loading }: Props) {
   return (
-    <section className="panel simulator-panel">
+    <section className="panel simulator-panel" data-tour="simulator">
       <h2>Integration simulator</h2>
       <p className="subtext">
         Pick which RAVEN feature is calling the XaaS contract — the same Explanation Card below renders

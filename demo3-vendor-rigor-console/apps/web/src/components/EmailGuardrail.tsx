@@ -38,7 +38,7 @@ export default function EmailGuardrail() {
 
   return (
     <section className="panel-grid guardrail-grid">
-      <article className="panel email-composer">
+      <article className="panel email-composer" data-tour="email-composer">
         <h2>Government email guardrail — composer extension</h2>
         <p className="subtext">Any outbound email to a *.va.gov contact outside PDS Health scans recipients before send.</p>
         <div className="mail-field"><span>To:</span><span>jane.doe@va.gov (Oracle Cutover Program)</span></div>
@@ -62,7 +62,7 @@ export default function EmailGuardrail() {
         )}
       </article>
 
-      <aside className="panel guardrail-notice">
+      <aside className="panel guardrail-notice" data-tour="guardrail-notice">
         <h2>Guardrail notice</h2>
         <p>Recipient jane.doe@va.gov is outside PDS Health: Patient &amp; Clinical Experience.</p>
         <p><strong>Policy:</strong> Include a PDS Health contact on Cc before sending.</p>
